@@ -1,0 +1,33 @@
+# ```
+# <WorkSpace Name>
+# |-- **<WorkSpace Name>.cywrk**
+# |-- <WorkSpace Name>.cywrk.<User Name>
+# `-- <Project Name>.cydsn
+#     |-- codegentemp
+#     |-- CortexM3
+#     |-- Export
+#     |-- Generated_Source
+#     |-- TopDesign
+#     |   `-- **TopDesign.cysch**
+#     |-- **cyapicallbacks.h**
+#     |-- **main.c**
+#     |-- <Project Name>.cycdx
+#     |-- **<Project Name>.cydwr**
+#     |-- <Project Name>.cyfit
+#     |-- **<Project Name>.cyprj**
+#     |-- <Project Name>.cyprj.<User Name>
+#     |-- <Project Name>.rpt
+#     |-- <Project Name>.svd
+#     `-- <Project Name>_timing.html
+# ```
+#
+# - [Revision Control for PSoC® Creator™ Projects](https://community.infineon.com/t5/Knowledge-Base-Articles/Revision-Control-for-PSoC-Creator-Projects/ta-p/251335)
+# - [PSoC CreatorのプロジェクトをGitで管理するときの.gitignore - niwa log](https://niwat0r1.hateblo.jp/entry/2020/05/01/223220)
+
+*.cywrk.*
+/*.cydsn/*
+!*.c
+!*.h
+!*.cydwr
+!*.cyprj
+!/*.cydsn/TopDesign
