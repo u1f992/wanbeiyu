@@ -31,3 +31,7 @@
 !*.cydwr
 !*.cyprj
 !/*.cydsn/TopDesign
+
+# ---
+
+!/*.cydsn/.clang-format
