@@ -3541,7 +3541,7 @@
         <Data key="sourceClk_plus_acuracy_name" value="0.25" />
         <Data key="src_clk_id" value="" />
         <Data key="src_clk_name" value="" />
-        <Data key="start_on_reset" value="True" />
+        <Data key="start_on_reset" value="False" />
         <Data key="trim_with" value="USB" />
       </Group>
       <Group key="AE29FF0C-09F4-4f1f-90F6-BE0C5AFEF171">
@@ -3710,7 +3710,7 @@
         <Data key="sourceClk_plus_acuracy_name" value="0.25" />
         <Data key="src_clk_id" value="25052E45-97E1-4618-A621-47712D88CDFB" />
         <Data key="src_clk_name" value="PLL0_Sel" />
-        <Data key="start_on_reset" value="False" />
+        <Data key="start_on_reset" value="True" />
       </Group>
     </Group>
   </Group>

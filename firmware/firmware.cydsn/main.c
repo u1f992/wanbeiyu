@@ -21,51 +21,59 @@
 
 #include <wanbeiyu.h>
 
-#define USBFS_MODE_DEVICE 0
+#define USBFS_DEVICE 0
+/*
+ * > The maximum amount of received data at a time is limited to 64 bytes.
+ * Document Number: 002-19744 Rev. *A
+ */
+#define USBUART_BUFFER_SIZE 64
 
-static bool USBUART_Started = false;
-
-static void USBUART_StartIfVBusPresent() {
-  // https://community.infineon.com/t5/Knowledge-Base-Articles/Troubleshooting-PSoC-3-PSoC-4-L-Series-and-PSoC-5LP-USB-Designs/ta-p/256817
+uint8 USBUART_OnData(void (*callback)(const uint8 *buffer, uint8 count,
+                                      void *user_data),
+                     void *user_data) {
+  static uint8 started = 0;
+  static uint8 buffer[USBUART_BUFFER_SIZE];
+  uint8 count;
+  /* https://community.infineon.com/t5/Knowledge-Base-Articles/Troubleshooting-PSoC-3-PSoC-4-L-Series-and-PSoC-5LP-USB-Designs/ta-p/256817#toc-hId-1576988805
+   */
   if (!USBUART_VBusPresent()) {
-    if (USBUART_Started) {
-      USBUART_Stop();
-      USBUART_Started = false;
-    }
-  } else {
-    if (!USBUART_Started) {
-      // https://www.infineon.com/dgdl/Infineon-Component_USBFS_V3.2-Software%20Module%20Datasheets-v03_02-EN.pdf?fileId=8ac78c8c7d0d8da4017d0e818d2f1332
-      USBUART_Start(USBFS_MODE_DEVICE, USBUART_5V_OPERATION);
-      while (!USBUART_GetConfiguration())
-        ;
-      USBUART_CDC_Init();
-      USBUART_Started = true;
-    }
-    // https://github.com/Infineon/PSoC4-MCU-USB-Connectivity-Designs/blob/d739e38414b1ff6a0f522fd9802a13dba2c0e13a/USBFS_UART/USBFS_UART.cydsn/main.c#L88-L97
-    if (USBUART_IsConfigurationChanged()) {
-      while (!USBUART_GetConfiguration())
-        ;
-      USBUART_CDC_Init();
-    }
+    USBUART_Stop();
+    started = 0;
+  } else if (!started) {
+    USBUART_Start(USBFS_DEVICE, USBUART_5V_OPERATION);
+    started = 1;
   }
+  /* https://github.com/Infineon/PSoC4-MCU-USB-Connectivity-Designs/blob/d739e38414b1ff6a0f522fd9802a13dba2c0e13a/USBFS_UART/USBFS_UART.cydsn/main.c#L87-L97
+   */
+  if (USBUART_IsConfigurationChanged() && USBUART_GetConfiguration()) {
+    USBUART_CDC_Init();
+  }
+  /* https://github.com/Infineon/PSoC4-MCU-USB-Connectivity-Designs/blob/d739e38414b1ff6a0f522fd9802a13dba2c0e13a/USBFS_UART/USBFS_UART.cydsn/main.c#L99-L178
+   */
+  if (!USBUART_GetConfiguration() || !USBUART_DataIsReady() ||
+      (count = USBUART_GetAll(buffer)) == 0) {
+    return 0;
+  }
+  callback(buffer, count, user_data);
+  return 1;
 }
 
-static void USBUART_SendString(const char *string) {
-  if (!USBUART_Started) {
-    return;
+void USBUART_PutData_1(const uint8 *buffer, uint16 length) {
+  while (USBUART_CDCIsReady() == 0)
+    ;
+  USBUART_PutData(buffer, length);
+  /* https://github.com/Infineon/PSoC4-MCU-USB-Connectivity-Designs/blob/d739e38414b1ff6a0f522fd9802a13dba2c0e13a/USBFS_UART/USBFS_UART.cydsn/main.c#L118-L132
+   */
+  if (USBUART_BUFFER_SIZE == length) {
+    while (USBUART_CDCIsReady() == 0)
+      ;
+    USBUART_PutData(NULL, 0);
   }
-  USBUART_PutString(string);
-  // const char *ptr = string;
-  // while (*ptr != '\0') {
-  //  USBUART_PutChar(*ptr);
-  //  ptr++;
-  //  CyDelay(10);
-  //}
 }
 
 static void SPI_SpiUartWriteTxDataBlocking(uint32 txData) {
   SPI_SpiUartWriteTxData(txData);
-  while (SPI_SpiIsBusBusy() != 0)
+  while (SPI_SpiIsBusBusy())
     ;
 }
 
@@ -563,65 +571,114 @@ static int wanbeiyu_state_to_string(const wanbeiyu_state_t *state,
                  state->power, touch_screen, c_stick, circle_pad);
 }
 
+static wanbeiyu_spst_switch_t a_switch;
+static wanbeiyu_spst_switch_t b_switch;
+static wanbeiyu_spst_switch_t select_switch;
+static wanbeiyu_spst_switch_t start_switch;
+static wanbeiyu_spst_switch_t right_switch;
+static wanbeiyu_spst_switch_t left_switch;
+static wanbeiyu_spst_switch_t up_switch;
+static wanbeiyu_spst_switch_t down_switch;
+static wanbeiyu_spst_switch_t r_switch;
+static wanbeiyu_spst_switch_t l_switch;
+static wanbeiyu_spst_switch_t x_switch;
+static wanbeiyu_spst_switch_t y_switch;
+static wanbeiyu_spst_switch_t zl_switch;
+static wanbeiyu_spst_switch_t zr_switch;
+static wanbeiyu_spst_switch_t home_switch;
+static wanbeiyu_spst_switch_t power_switch;
+
+static wanbeiyu_rdac_320_steps_t touch_screen_horizontal;
+static wanbeiyu_rdac_240_steps_t touch_screen_vertical;
+static wanbeiyu_spst_switch_t touch_screen_switch;
+
+static wanbeiyu_idac_t c_stick_1;
+static wanbeiyu_spst_switch_t c_stick_1_switch;
+static wanbeiyu_idac_t c_stick_3;
+static wanbeiyu_spst_switch_t c_stick_3_switch;
+
+static wanbeiyu_idac_t circle_pad_x;
+static wanbeiyu_spst_switch_t circle_pad_x_switch;
+static wanbeiyu_idac_t circle_pad_y;
+static wanbeiyu_spst_switch_t circle_pad_y_switch;
+
+static wanbeiyu_console_t console;
+static wanbeiyu_state_t state;
+
+enum {
+  STATE_INITIAL,
+  STATE_NATIVE_DATA_0,
+  STATE_NATIVE_DATA_1,
+  STATE_NATIVE_DATA_2,
+  STATE_NATIVE_DATA_3,
+  STATE_NATIVE_DATA_4,
+  STATE_NATIVE_DATA_5,
+  STATE_NATIVE_DATA_6,
+  STATE_NATIVE_DATA_7,
+  STATE_NATIVE_DATA_8
+} buffer_state = STATE_INITIAL;
+
+static void run(const uint8 *buffer, uint8 count, void *user_data) {
+  static uint8 console_state_buffer[10];
+  static char string[WANBEIYU_STATE_STRING_MAX_LENGTH];
+  int i;
+  (void)user_data;
+  for (i = 0; i < count; i++) {
+    unsigned char c = buffer[i];
+
+    switch (buffer_state) {
+    case STATE_INITIAL:
+      if (c == 0xfb) {
+        console_state_buffer[buffer_state++] = c;
+      } else {
+        buffer_state = STATE_INITIAL;
+      }
+      break;
+    case STATE_NATIVE_DATA_0:
+    case STATE_NATIVE_DATA_1:
+    case STATE_NATIVE_DATA_2:
+    case STATE_NATIVE_DATA_3:
+    case STATE_NATIVE_DATA_4:
+    case STATE_NATIVE_DATA_5:
+    case STATE_NATIVE_DATA_6:
+    case STATE_NATIVE_DATA_7:
+      console_state_buffer[buffer_state++] = c;
+      break;
+    case STATE_NATIVE_DATA_8:
+      console_state_buffer[buffer_state] = c;
+      wanbeiyu_deserialize(console_state_buffer, 10, &state);
+      wanbeiyu_console_set(&console, &state);
+
+      wanbeiyu_state_to_string(&state, string);
+      USBUART_PutData_1((uint8 *)"OK\n", 3);
+
+      Pin_Status_Write(1);
+      Timer_Status_Stop();
+      Timer_Status_WriteCounter(0);
+      Timer_Status_Start();
+
+      buffer_state = STATE_INITIAL;
+      break;
+
+    default:
+      buffer_state = STATE_INITIAL;
+      break;
+    }
+  }
+}
+
+CY_ISR(ISR_Status_Handler) {
+  Pin_Status_Write(0);
+  Timer_Status_ClearInterrupt(Timer_Status_INTR_MASK_TC);
+}
+
 int main(void) {
-  wanbeiyu_spst_switch_t a_switch;
-  wanbeiyu_spst_switch_t b_switch;
-  wanbeiyu_spst_switch_t select_switch;
-  wanbeiyu_spst_switch_t start_switch;
-  wanbeiyu_spst_switch_t right_switch;
-  wanbeiyu_spst_switch_t left_switch;
-  wanbeiyu_spst_switch_t up_switch;
-  wanbeiyu_spst_switch_t down_switch;
-  wanbeiyu_spst_switch_t r_switch;
-  wanbeiyu_spst_switch_t l_switch;
-  wanbeiyu_spst_switch_t x_switch;
-  wanbeiyu_spst_switch_t y_switch;
-  wanbeiyu_spst_switch_t zl_switch;
-  wanbeiyu_spst_switch_t zr_switch;
-  wanbeiyu_spst_switch_t home_switch;
-  wanbeiyu_spst_switch_t power_switch;
-
-  wanbeiyu_rdac_320_steps_t touch_screen_horizontal;
-  wanbeiyu_rdac_240_steps_t touch_screen_vertical;
-  wanbeiyu_spst_switch_t touch_screen_switch;
-
-  wanbeiyu_idac_t c_stick_1;
-  wanbeiyu_spst_switch_t c_stick_1_switch;
-  wanbeiyu_idac_t c_stick_3;
-  wanbeiyu_spst_switch_t c_stick_3_switch;
-
-  wanbeiyu_idac_t circle_pad_x;
-  wanbeiyu_spst_switch_t circle_pad_x_switch;
-  wanbeiyu_idac_t circle_pad_y;
-  wanbeiyu_spst_switch_t circle_pad_y_switch;
-
-  wanbeiyu_console_t console;
-  wanbeiyu_state_t state;
-
-  enum {
-    STATE_INITIAL,
-    STATE_NATIVE_DATA_0,
-    STATE_NATIVE_DATA_1,
-    STATE_NATIVE_DATA_2,
-    STATE_NATIVE_DATA_3,
-    STATE_NATIVE_DATA_4,
-    STATE_NATIVE_DATA_5,
-    STATE_NATIVE_DATA_6,
-    STATE_NATIVE_DATA_7,
-    STATE_NATIVE_DATA_8
-  } buffer_state = STATE_INITIAL;
-  /*
-   * > The maximum amount of received data at a time is limited to 64 bytes.
-   * Document Number: 002-19744 Rev. *A
-   */
-  uint8 uart_buffer[64];
-  uint8 state_buffer[10];
-
-  char string[WANBEIYU_STATE_STRING_MAX_LENGTH];
 
   CyGlobalIntEnable; /* Enable global interrupts. */
 
   /* Place your initialization/startup code here (e.g. MyInst_Start()) */
+  ISR_Status_StartEx(ISR_Status_Handler);
+
   SPI_Start();
   SPI_SpiSetActiveSlaveSelect(SPI_SPI_SLAVE_SELECT0);
   AMux_TouchScreen_Start();
@@ -722,61 +779,8 @@ int main(void) {
   wanbeiyu_circle_pad_release(&(console.circle_pad));
 
   for (;;) {
-    uint16_t count;
-
-    USBUART_StartIfVBusPresent();
-    if (!USBUART_Started) {
+    if (!USBUART_OnData(run, NULL)) {
       buffer_state = STATE_INITIAL;
-      continue;
-    }
-    count = USBUART_GetCount();
-    if (count == 0) {
-      continue;
-    }
-    sprintf(string, "%d\n", count);
-    USBUART_SendString(string);
-
-    assert(count <= 64);
-    USBUART_GetData(uart_buffer, count);
-
-    Pin_Status_Write(1);
-
-    for (int i = 0; i < count; i++) {
-      unsigned char c = uart_buffer[i];
-
-      switch (buffer_state) {
-      case STATE_INITIAL:
-        if (c == 0xfb) {
-          state_buffer[buffer_state++] = c;
-        } else {
-          buffer_state = STATE_INITIAL;
-        }
-        break;
-      case STATE_NATIVE_DATA_0:
-      case STATE_NATIVE_DATA_1:
-      case STATE_NATIVE_DATA_2:
-      case STATE_NATIVE_DATA_3:
-      case STATE_NATIVE_DATA_4:
-      case STATE_NATIVE_DATA_5:
-      case STATE_NATIVE_DATA_6:
-      case STATE_NATIVE_DATA_7:
-        state_buffer[buffer_state++] = c;
-        break;
-      case STATE_NATIVE_DATA_8:
-        state_buffer[buffer_state] = c;
-        wanbeiyu_deserialize(state_buffer, 10, &state);
-        wanbeiyu_console_set(&console, &state);
-
-        wanbeiyu_state_to_string(&state, string);
-        USBUART_SendString(string);
-
-        buffer_state = STATE_INITIAL;
-        break;
-
-      default:
-        buffer_state = STATE_INITIAL;
-        break;
-      }
     }
   }
 }
