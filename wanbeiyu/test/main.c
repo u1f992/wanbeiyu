@@ -18,415 +18,493 @@
 #undef __STDC_VERSION__
 #include <wanbeiyu.h>
 
-#include <assert.h>
 #include <stdio.h>
 
-#define TEST_IDAC_POLARITY_SOURCE WANBEIYU_TRUE
-#define TEST_IDAC_POLARITY_SINK WANBEIYU_FALSE
+typedef enum test_spst_switch_state_t {
+  TEST_SPST_SWITCH_OPEN,
+  TEST_SPST_SWITCH_CLOSE
+} test_spst_switch_state_t;
 
-static void test_deserialize(void) {
-  wanbeiyu_state_t out;
-  wanbeiyu_uint8_t buffer[10];
-  buffer[0] = 0xfb;
-  buffer[1] = 147 /* 0b10010011 */;
-  buffer[2] = 201 /* 0b11001001 */;
-  buffer[3] = 209 /* 0b11010__1; */;
-  buffer[4] = 0x3f;
-  buffer[5] = 239;
-  buffer[6] = 0;
-  buffer[7] = 1;
-  buffer[8] = 2;
-  buffer[9] = 3;
-  wanbeiyu_deserialize(buffer, sizeof(buffer), &out);
-  assert(out.a);
-  assert(!out.b);
-  assert(!out.select);
-  assert(out.start);
-  assert(!out.right);
-  assert(!out.left);
-  assert(out.up);
-  assert(out.down);
-  assert(out.r);
-  assert(out.l);
-  assert(!out.x);
-  assert(!out.y);
-  assert(out.zl);
-  assert(!out.zr);
-  assert(!out.home);
-  assert(out.power);
-  assert(out.touch_screen != NULL && out.touch_screen->x == 319 &&
-         out.touch_screen->y == 239);
-  assert(out.c_stick.x != NULL && *(out.c_stick.x) == 0);
-  assert(out.c_stick.y == NULL);
-  assert(out.circle_pad.x != NULL && *(out.circle_pad.x) == 2);
-  assert(out.circle_pad.y == NULL);
+typedef struct test_spst_switch_t {
+  wanbeiyu_hal_spst_switch_t base;
+  test_spst_switch_state_t state;
+} test_spst_switch_t;
+
+static void test_spst_switch_init(test_spst_switch_t *switch_,
+                                  void (*open)(wanbeiyu_hal_spst_switch_t *),
+                                  void (*close)(wanbeiyu_hal_spst_switch_t *)) {
+  assert(switch_ != NULL);
+  assert(open != NULL);
+  assert(close != NULL);
+
+  wanbeiyu_hal_spst_switch_init(&(switch_->base), open, close);
+  switch_->state = TEST_SPST_SWITCH_OPEN;
 }
 
-static wanbeiyu_bool_t button_switch_state = WANBEIYU_FALSE;
-static void button_switch_open(wanbeiyu_spst_switch_t *super) {
-  assert(super != NULL);
-  (void)super;
-  button_switch_state = WANBEIYU_FALSE;
+static void power_sw_open(wanbeiyu_hal_spst_switch_t *switch_) {
+  assert(switch_ != NULL);
+
+  ((test_spst_switch_t *)switch_)->state = TEST_SPST_SWITCH_OPEN;
 }
-static void button_switch_close(wanbeiyu_spst_switch_t *super) {
-  assert(super != NULL);
-  (void)super;
-  button_switch_state = WANBEIYU_TRUE;
-}
+static void power_sw_close(wanbeiyu_hal_spst_switch_t *switch_) {
+  assert(switch_ != NULL);
 
-static void test_button(void) {
-  wanbeiyu_spst_switch_t button_switch;
-  wanbeiyu_button_t button;
-
-  wanbeiyu_spst_switch_init(&button_switch, button_switch_open,
-                            button_switch_close);
-  wanbeiyu_button_init(&button, &button_switch);
-
-  wanbeiyu_button_hold(&button);
-  assert(button_switch_state);
-
-  wanbeiyu_button_release(&button);
-  assert(!button_switch_state);
+  ((test_spst_switch_t *)switch_)->state = TEST_SPST_SWITCH_CLOSE;
 }
 
-static wanbeiyu_uint16_t touch_screen_horizontal_position = 0;
+static void home_sw_open(wanbeiyu_hal_spst_switch_t *switch_) {
+  assert(switch_ != NULL);
+
+  ((test_spst_switch_t *)switch_)->state = TEST_SPST_SWITCH_OPEN;
+}
+static void home_sw_close(wanbeiyu_hal_spst_switch_t *switch_) {
+  assert(switch_ != NULL);
+
+  ((test_spst_switch_t *)switch_)->state = TEST_SPST_SWITCH_CLOSE;
+}
+
+static void zr_sw_open(wanbeiyu_hal_spst_switch_t *switch_) {
+  assert(switch_ != NULL);
+
+  ((test_spst_switch_t *)switch_)->state = TEST_SPST_SWITCH_OPEN;
+}
+static void zr_sw_close(wanbeiyu_hal_spst_switch_t *switch_) {
+  assert(switch_ != NULL);
+
+  ((test_spst_switch_t *)switch_)->state = TEST_SPST_SWITCH_CLOSE;
+}
+
+static void zl_sw_open(wanbeiyu_hal_spst_switch_t *switch_) {
+  assert(switch_ != NULL);
+
+  ((test_spst_switch_t *)switch_)->state = TEST_SPST_SWITCH_OPEN;
+}
+static void zl_sw_close(wanbeiyu_hal_spst_switch_t *switch_) {
+  assert(switch_ != NULL);
+
+  ((test_spst_switch_t *)switch_)->state = TEST_SPST_SWITCH_CLOSE;
+}
+
+static void y_sw_open(wanbeiyu_hal_spst_switch_t *switch_) {
+  assert(switch_ != NULL);
+
+  ((test_spst_switch_t *)switch_)->state = TEST_SPST_SWITCH_OPEN;
+}
+static void y_sw_close(wanbeiyu_hal_spst_switch_t *switch_) {
+  assert(switch_ != NULL);
+
+  ((test_spst_switch_t *)switch_)->state = TEST_SPST_SWITCH_CLOSE;
+}
+
+static void x_sw_open(wanbeiyu_hal_spst_switch_t *switch_) {
+  assert(switch_ != NULL);
+
+  ((test_spst_switch_t *)switch_)->state = TEST_SPST_SWITCH_OPEN;
+}
+static void x_sw_close(wanbeiyu_hal_spst_switch_t *switch_) {
+  assert(switch_ != NULL);
+
+  ((test_spst_switch_t *)switch_)->state = TEST_SPST_SWITCH_CLOSE;
+}
+
+static void l_sw_open(wanbeiyu_hal_spst_switch_t *switch_) {
+  assert(switch_ != NULL);
+
+  ((test_spst_switch_t *)switch_)->state = TEST_SPST_SWITCH_OPEN;
+}
+static void l_sw_close(wanbeiyu_hal_spst_switch_t *switch_) {
+  assert(switch_ != NULL);
+
+  ((test_spst_switch_t *)switch_)->state = TEST_SPST_SWITCH_CLOSE;
+}
+
+static void r_sw_open(wanbeiyu_hal_spst_switch_t *switch_) {
+  assert(switch_ != NULL);
+
+  ((test_spst_switch_t *)switch_)->state = TEST_SPST_SWITCH_OPEN;
+}
+static void r_sw_close(wanbeiyu_hal_spst_switch_t *switch_) {
+  assert(switch_ != NULL);
+
+  ((test_spst_switch_t *)switch_)->state = TEST_SPST_SWITCH_CLOSE;
+}
+
+static void down_sw_open(wanbeiyu_hal_spst_switch_t *switch_) {
+  assert(switch_ != NULL);
+
+  ((test_spst_switch_t *)switch_)->state = TEST_SPST_SWITCH_OPEN;
+}
+static void down_sw_close(wanbeiyu_hal_spst_switch_t *switch_) {
+  assert(switch_ != NULL);
+
+  ((test_spst_switch_t *)switch_)->state = TEST_SPST_SWITCH_CLOSE;
+}
+
+static void up_sw_open(wanbeiyu_hal_spst_switch_t *switch_) {
+  assert(switch_ != NULL);
+
+  ((test_spst_switch_t *)switch_)->state = TEST_SPST_SWITCH_OPEN;
+}
+static void up_sw_close(wanbeiyu_hal_spst_switch_t *switch_) {
+  assert(switch_ != NULL);
+
+  ((test_spst_switch_t *)switch_)->state = TEST_SPST_SWITCH_CLOSE;
+}
+
+static void left_sw_open(wanbeiyu_hal_spst_switch_t *switch_) {
+  assert(switch_ != NULL);
+
+  ((test_spst_switch_t *)switch_)->state = TEST_SPST_SWITCH_OPEN;
+}
+static void left_sw_close(wanbeiyu_hal_spst_switch_t *switch_) {
+  assert(switch_ != NULL);
+
+  ((test_spst_switch_t *)switch_)->state = TEST_SPST_SWITCH_CLOSE;
+}
+
+static void right_sw_open(wanbeiyu_hal_spst_switch_t *switch_) {
+  assert(switch_ != NULL);
+
+  ((test_spst_switch_t *)switch_)->state = TEST_SPST_SWITCH_OPEN;
+}
+static void right_sw_close(wanbeiyu_hal_spst_switch_t *switch_) {
+  assert(switch_ != NULL);
+
+  ((test_spst_switch_t *)switch_)->state = TEST_SPST_SWITCH_CLOSE;
+}
+
+static void start_sw_open(wanbeiyu_hal_spst_switch_t *switch_) {
+  assert(switch_ != NULL);
+
+  ((test_spst_switch_t *)switch_)->state = TEST_SPST_SWITCH_OPEN;
+}
+static void start_sw_close(wanbeiyu_hal_spst_switch_t *switch_) {
+  assert(switch_ != NULL);
+
+  ((test_spst_switch_t *)switch_)->state = TEST_SPST_SWITCH_CLOSE;
+}
+
+static void select_sw_open(wanbeiyu_hal_spst_switch_t *switch_) {
+  assert(switch_ != NULL);
+
+  ((test_spst_switch_t *)switch_)->state = TEST_SPST_SWITCH_OPEN;
+}
+static void select_sw_close(wanbeiyu_hal_spst_switch_t *switch_) {
+  assert(switch_ != NULL);
+
+  ((test_spst_switch_t *)switch_)->state = TEST_SPST_SWITCH_CLOSE;
+}
+
+static void b_sw_open(wanbeiyu_hal_spst_switch_t *switch_) {
+  assert(switch_ != NULL);
+
+  ((test_spst_switch_t *)switch_)->state = TEST_SPST_SWITCH_OPEN;
+}
+static void b_sw_close(wanbeiyu_hal_spst_switch_t *switch_) {
+  assert(switch_ != NULL);
+
+  ((test_spst_switch_t *)switch_)->state = TEST_SPST_SWITCH_CLOSE;
+}
+
+static void a_sw_open(wanbeiyu_hal_spst_switch_t *switch_) {
+  assert(switch_ != NULL);
+
+  ((test_spst_switch_t *)switch_)->state = TEST_SPST_SWITCH_OPEN;
+}
+static void a_sw_close(wanbeiyu_hal_spst_switch_t *switch_) {
+  assert(switch_ != NULL);
+
+  ((test_spst_switch_t *)switch_)->state = TEST_SPST_SWITCH_CLOSE;
+}
+
+static void ts_sw_open(wanbeiyu_hal_spst_switch_t *switch_) {
+  assert(switch_ != NULL);
+
+  ((test_spst_switch_t *)switch_)->state = TEST_SPST_SWITCH_OPEN;
+}
+static void ts_sw_close(wanbeiyu_hal_spst_switch_t *switch_) {
+  assert(switch_ != NULL);
+
+  ((test_spst_switch_t *)switch_)->state = TEST_SPST_SWITCH_CLOSE;
+}
+
+static void csa1_sw_open(wanbeiyu_hal_spst_switch_t *switch_) {
+  assert(switch_ != NULL);
+
+  ((test_spst_switch_t *)switch_)->state = TEST_SPST_SWITCH_OPEN;
+}
+static void csa1_sw_close(wanbeiyu_hal_spst_switch_t *switch_) {
+  assert(switch_ != NULL);
+
+  ((test_spst_switch_t *)switch_)->state = TEST_SPST_SWITCH_CLOSE;
+}
+
+static void csa3_sw_open(wanbeiyu_hal_spst_switch_t *switch_) {
+  assert(switch_ != NULL);
+
+  ((test_spst_switch_t *)switch_)->state = TEST_SPST_SWITCH_OPEN;
+}
+static void csa3_sw_close(wanbeiyu_hal_spst_switch_t *switch_) {
+  assert(switch_ != NULL);
+
+  ((test_spst_switch_t *)switch_)->state = TEST_SPST_SWITCH_CLOSE;
+}
+
+static void cpx_sw_open(wanbeiyu_hal_spst_switch_t *switch_) {
+  assert(switch_ != NULL);
+
+  ((test_spst_switch_t *)switch_)->state = TEST_SPST_SWITCH_OPEN;
+}
+static void cpx_sw_close(wanbeiyu_hal_spst_switch_t *switch_) {
+  assert(switch_ != NULL);
+
+  ((test_spst_switch_t *)switch_)->state = TEST_SPST_SWITCH_CLOSE;
+}
+
+static void cpy_sw_open(wanbeiyu_hal_spst_switch_t *switch_) {
+  assert(switch_ != NULL);
+
+  ((test_spst_switch_t *)switch_)->state = TEST_SPST_SWITCH_OPEN;
+}
+static void cpy_sw_close(wanbeiyu_hal_spst_switch_t *switch_) {
+  assert(switch_ != NULL);
+
+  ((test_spst_switch_t *)switch_)->state = TEST_SPST_SWITCH_CLOSE;
+}
+
+typedef enum test_idac_state_t {
+  TEST_IDAC_SOURCE,
+  TEST_IDAC_SINK
+} test_idac_state_t;
+
+typedef struct test_idac_t {
+  wanbeiyu_hal_idac_t base;
+  test_idac_state_t state;
+  wanbeiyu_uint8_t value;
+} test_idac_t;
+
 static void
-touch_screen_horizontal_set_wiper_position(wanbeiyu_rdac_320_steps_t *super,
-                                           wanbeiyu_uint16_t position) {
-  assert(super != NULL);
+test_idac_init(test_idac_t *idac,
+               void (*source)(wanbeiyu_hal_idac_t *, wanbeiyu_uint8_t),
+               void (*sink)(wanbeiyu_hal_idac_t *, wanbeiyu_uint8_t)) {
+  assert(idac != NULL);
+  assert(source != NULL);
+  assert(sink != NULL);
+
+  wanbeiyu_hal_idac_init(&(idac->base), source, sink);
+  idac->state = TEST_IDAC_SINK;
+  idac->value = 0;
+}
+
+static void csa1_idac_source(wanbeiyu_hal_idac_t *idac,
+                             wanbeiyu_uint8_t value) {
+  assert(idac != NULL);
+
+  ((test_idac_t *)idac)->state = TEST_IDAC_SOURCE;
+  ((test_idac_t *)idac)->value = value;
+}
+static void csa1_idac_sink(wanbeiyu_hal_idac_t *idac, wanbeiyu_uint8_t value) {
+  assert(idac != NULL);
+
+  ((test_idac_t *)idac)->state = TEST_IDAC_SINK;
+  ((test_idac_t *)idac)->value = value;
+}
+
+static void csa3_idac_source(wanbeiyu_hal_idac_t *idac,
+                             wanbeiyu_uint8_t value) {
+  assert(idac != NULL);
+
+  ((test_idac_t *)idac)->state = TEST_IDAC_SOURCE;
+  ((test_idac_t *)idac)->value = value;
+}
+static void csa3_idac_sink(wanbeiyu_hal_idac_t *idac, wanbeiyu_uint8_t value) {
+  assert(idac != NULL);
+
+  ((test_idac_t *)idac)->state = TEST_IDAC_SINK;
+  ((test_idac_t *)idac)->value = value;
+}
+
+static void cpx_idac_source(wanbeiyu_hal_idac_t *idac, wanbeiyu_uint8_t value) {
+  assert(idac != NULL);
+
+  ((test_idac_t *)idac)->state = TEST_IDAC_SOURCE;
+  ((test_idac_t *)idac)->value = value;
+}
+static void cpx_idac_sink(wanbeiyu_hal_idac_t *idac, wanbeiyu_uint8_t value) {
+  assert(idac != NULL);
+
+  ((test_idac_t *)idac)->state = TEST_IDAC_SINK;
+  ((test_idac_t *)idac)->value = value;
+}
+
+static void cpy_idac_source(wanbeiyu_hal_idac_t *idac, wanbeiyu_uint8_t value) {
+  assert(idac != NULL);
+
+  ((test_idac_t *)idac)->state = TEST_IDAC_SOURCE;
+  ((test_idac_t *)idac)->value = value;
+}
+static void cpy_idac_sink(wanbeiyu_hal_idac_t *idac, wanbeiyu_uint8_t value) {
+  assert(idac != NULL);
+
+  ((test_idac_t *)idac)->state = TEST_IDAC_SINK;
+  ((test_idac_t *)idac)->value = value;
+}
+
+typedef struct test_rdac_320_steps_t {
+  wanbeiyu_hal_rdac_320_steps_t base;
+  wanbeiyu_uint16_t position;
+} test_rdac_320_steps_t;
+
+static void test_rdac_320_steps_init(
+    test_rdac_320_steps_t *rdac,
+    void (*set_wiper_position)(wanbeiyu_hal_rdac_320_steps_t *,
+                               wanbeiyu_uint16_t)) {
+  assert(rdac != NULL);
+  assert(set_wiper_position != NULL);
+
+  wanbeiyu_hal_rdac_320_steps_init(&(rdac->base), set_wiper_position);
+  rdac->position = 0;
+}
+
+static void tsx_set_wiper_position(wanbeiyu_hal_rdac_320_steps_t *rdac,
+                                   wanbeiyu_uint16_t position) {
+  assert(rdac != NULL);
   assert(position < 320);
-  (void)super;
-  touch_screen_horizontal_position = position;
+
+  ((test_rdac_320_steps_t *)rdac)->position = position;
 }
 
-static wanbeiyu_uint8_t touch_screen_vertical_position = 0;
-static void
-touch_screen_vertical_set_wiper_position(wanbeiyu_rdac_240_steps_t *super,
-                                         wanbeiyu_uint8_t position) {
-  assert(super != NULL);
+typedef struct test_rdac_240_steps_t {
+  wanbeiyu_hal_rdac_240_steps_t base;
+  wanbeiyu_uint8_t position;
+} test_rdac_240_steps_t;
+
+static void test_rdac_240_steps_init(
+    test_rdac_240_steps_t *rdac,
+    void (*set_wiper_position)(wanbeiyu_hal_rdac_240_steps_t *,
+                               wanbeiyu_uint8_t)) {
+  assert(rdac != NULL);
+  assert(set_wiper_position != NULL);
+
+  wanbeiyu_hal_rdac_240_steps_init(&(rdac->base), set_wiper_position);
+  rdac->position = 0;
+}
+
+static void tsy_set_wiper_position(wanbeiyu_hal_rdac_240_steps_t *rdac,
+                                   wanbeiyu_uint8_t position) {
+  assert(rdac != NULL);
   assert(position < 240);
-  (void)super;
-  touch_screen_vertical_position = position;
+
+  ((test_rdac_240_steps_t *)rdac)->position = position;
 }
 
-static wanbeiyu_bool_t touch_screen_switch_state = WANBEIYU_FALSE;
-static void touch_screen_switch_open(wanbeiyu_spst_switch_t *super) {
-  assert(super != NULL);
-  (void)super;
-  touch_screen_switch_state = WANBEIYU_FALSE;
-}
-static void touch_screen_switch_close(wanbeiyu_spst_switch_t *super) {
-  assert(super != NULL);
-  (void)super;
-  touch_screen_switch_state = WANBEIYU_TRUE;
-}
+typedef struct test_uart_t {
+  wanbeiyu_hal_uart_t base;
+} test_uart_t;
 
-static void test_touch_screen(void) {
-  wanbeiyu_touch_screen_state_t state;
+static void test_uart_write(wanbeiyu_hal_uart_t *uart,
+                            const wanbeiyu_uint8_t *buffer, size_t length) {
+  size_t i = 0;
 
-  wanbeiyu_rdac_320_steps_t touch_screen_horizontal;
-  wanbeiyu_rdac_240_steps_t touch_screen_vertical;
-  wanbeiyu_spst_switch_t touch_screen_switch;
-  wanbeiyu_touch_screen_t touch_screen;
+  (void)uart;
+  assert(uart != NULL);
 
-  wanbeiyu_rdac_320_steps_init(&touch_screen_horizontal,
-                               touch_screen_horizontal_set_wiper_position);
-  wanbeiyu_rdac_240_steps_init(&touch_screen_vertical,
-                               touch_screen_vertical_set_wiper_position);
-  wanbeiyu_spst_switch_init(&touch_screen_switch, touch_screen_switch_open,
-                            touch_screen_switch_close);
-  wanbeiyu_touch_screen_init(&touch_screen, &touch_screen_horizontal,
-                             &touch_screen_vertical, &touch_screen_switch);
-
-  wanbeiyu_touch_screen_release(&touch_screen);
-  assert(!touch_screen_switch_state);
-
-  state.x = 0;
-  state.y = 0;
-  wanbeiyu_touch_screen_hold(&touch_screen, &state);
-  assert(touch_screen_horizontal_position == 0);
-  assert(touch_screen_vertical_position == 0);
-  assert(touch_screen_switch_state);
-
-  state.x = 319;
-  state.y = 239;
-  wanbeiyu_touch_screen_hold(&touch_screen, &state);
-  assert(touch_screen_horizontal_position == 319);
-  assert(touch_screen_vertical_position == 239);
-  assert(touch_screen_switch_state);
-
-  state.x = 320;
-  state.y = 240;
-  wanbeiyu_touch_screen_hold(&touch_screen, &state);
-  assert(touch_screen_horizontal_position == 319);
-  assert(touch_screen_vertical_position == 239);
-  assert(touch_screen_switch_state);
-
-  wanbeiyu_touch_screen_release(&touch_screen);
-  assert(!touch_screen_switch_state);
+  for (i = 0; i < length; i++) {
+    fprintf(stderr, "%02x ", buffer[i]);
+  }
+  fprintf(stderr, "\n");
 }
 
-static wanbeiyu_bool_t c_stick_1_polarity = TEST_IDAC_POLARITY_SINK;
-static wanbeiyu_uint8_t c_stick_1_value = 0;
-static void c_stick_1_source(wanbeiyu_idac_t *super, wanbeiyu_uint8_t value) {
-  assert(super != NULL);
-  c_stick_1_polarity = TEST_IDAC_POLARITY_SOURCE;
-  c_stick_1_value = value;
-}
-static void c_stick_1_sink(wanbeiyu_idac_t *super, wanbeiyu_uint8_t value) {
-  assert(super != NULL);
-  c_stick_1_polarity = TEST_IDAC_POLARITY_SINK;
-  c_stick_1_value = value;
+static void test_uart_init(test_uart_t *uart) {
+  assert(uart != NULL);
+
+  wanbeiyu_hal_uart_init(&(uart->base), test_uart_write);
 }
 
-static wanbeiyu_bool_t c_stick_1_switch_state = WANBEIYU_FALSE;
-static void c_stick_1_switch_open(wanbeiyu_spst_switch_t *super) {
-  assert(super != NULL);
-  (void)super;
-  c_stick_1_switch_state = WANBEIYU_FALSE;
-}
-static void c_stick_1_switch_close(wanbeiyu_spst_switch_t *super) {
-  assert(super != NULL);
-  (void)super;
-  c_stick_1_switch_state = WANBEIYU_TRUE;
-}
+typedef struct test_impl_t {
+  test_uart_t uart;
+  test_spst_switch_t power_sw;
+  test_spst_switch_t home_sw;
+  test_spst_switch_t zr_sw;
+  test_spst_switch_t zl_sw;
+  test_spst_switch_t y_sw;
+  test_spst_switch_t x_sw;
+  test_spst_switch_t l_sw;
+  test_spst_switch_t r_sw;
+  test_spst_switch_t down_sw;
+  test_spst_switch_t up_sw;
+  test_spst_switch_t left_sw;
+  test_spst_switch_t right_sw;
+  test_spst_switch_t start_sw;
+  test_spst_switch_t select_sw;
+  test_spst_switch_t b_sw;
+  test_spst_switch_t a_sw;
+  test_spst_switch_t ts_sw;
+  test_spst_switch_t csa1_sw;
+  test_spst_switch_t csa3_sw;
+  test_spst_switch_t cpx_sw;
+  test_spst_switch_t cpy_sw;
+  test_rdac_320_steps_t tsx_rdac;
+  test_rdac_240_steps_t tsy_rdac;
+  test_idac_t csa1_idac;
+  test_idac_t csa3_idac;
+  test_idac_t cpx_idac;
+  test_idac_t cpy_idac;
+} test_impl_t;
 
-static wanbeiyu_bool_t c_stick_3_polarity = TEST_IDAC_POLARITY_SINK;
-static wanbeiyu_uint8_t c_stick_3_value = 0;
-static void c_stick_3_source(wanbeiyu_idac_t *super, wanbeiyu_uint8_t value) {
-  assert(super != NULL);
-  c_stick_3_polarity = TEST_IDAC_POLARITY_SOURCE;
-  c_stick_3_value = value;
-}
-static void c_stick_3_sink(wanbeiyu_idac_t *super, wanbeiyu_uint8_t value) {
-  assert(super != NULL);
-  c_stick_3_polarity = TEST_IDAC_POLARITY_SINK;
-  c_stick_3_value = value;
-}
-
-static wanbeiyu_bool_t c_stick_3_switch_state = WANBEIYU_FALSE;
-static void c_stick_3_switch_open(wanbeiyu_spst_switch_t *super) {
-  assert(super != NULL);
-  (void)super;
-  c_stick_3_switch_state = WANBEIYU_FALSE;
-}
-static void c_stick_3_switch_close(wanbeiyu_spst_switch_t *super) {
-  assert(super != NULL);
-  (void)super;
-  c_stick_3_switch_state = WANBEIYU_TRUE;
-}
-
-static void test_c_stick(void) {
-  wanbeiyu_uint8_t x;
-  wanbeiyu_uint8_t y;
-  wanbeiyu_c_stick_state_t state;
-
-  wanbeiyu_idac_t c_stick_1;
-  wanbeiyu_spst_switch_t c_stick_1_switch;
-  wanbeiyu_idac_t c_stick_3;
-  wanbeiyu_spst_switch_t c_stick_3_switch;
-  wanbeiyu_c_stick_t c_stick;
-
-  wanbeiyu_idac_init(&c_stick_1, c_stick_1_source, c_stick_1_sink);
-  wanbeiyu_spst_switch_init(&c_stick_1_switch, c_stick_1_switch_open,
-                            c_stick_1_switch_close);
-  wanbeiyu_idac_init(&c_stick_3, c_stick_3_source, c_stick_3_sink);
-  wanbeiyu_spst_switch_init(&c_stick_3_switch, c_stick_3_switch_open,
-                            c_stick_3_switch_close);
-  wanbeiyu_c_stick_init(&c_stick, &c_stick_1, &c_stick_1_switch, &c_stick_3,
-                        &c_stick_3_switch);
-
-  wanbeiyu_c_stick_release(&c_stick);
-  assert(!c_stick_1_switch_state);
-  assert(!c_stick_3_switch_state);
-
-  x = 0;
-  y = 0;
-  state.x = &x;
-  state.y = &y;
-  wanbeiyu_c_stick_hold(&c_stick, &state);
-  assert(!c_stick_1_switch_state);
-  assert(c_stick_3_polarity == TEST_IDAC_POLARITY_SINK);
-  assert(c_stick_3_value == 255);
-  assert(c_stick_3_switch_state);
-
-  x = 0;
-  y = 255;
-  state.x = &x;
-  state.y = &y;
-  wanbeiyu_c_stick_hold(&c_stick, &state);
-  assert(c_stick_1_polarity == TEST_IDAC_POLARITY_SOURCE);
-  assert(c_stick_1_value == 255);
-  assert(c_stick_1_switch_state);
-  assert(!c_stick_3_switch_state);
-
-  x = 255;
-  y = 255;
-  state.x = &x;
-  state.y = &y;
-  wanbeiyu_c_stick_hold(&c_stick, &state);
-  assert(!c_stick_1_switch_state);
-  assert(c_stick_3_polarity == TEST_IDAC_POLARITY_SOURCE);
-  assert(c_stick_3_value == 255);
-  assert(c_stick_3_switch_state);
-
-  x = 255;
-  y = 0;
-  state.x = &x;
-  state.y = &y;
-  wanbeiyu_c_stick_hold(&c_stick, &state);
-  assert(c_stick_1_polarity == TEST_IDAC_POLARITY_SINK);
-  assert(c_stick_1_value == 255);
-  assert(c_stick_1_switch_state);
-  assert(!c_stick_3_switch_state);
-
-  wanbeiyu_c_stick_release(&c_stick);
-  assert(!c_stick_1_switch_state);
-  assert(!c_stick_3_switch_state);
-}
-
-static wanbeiyu_bool_t circle_pad_horizontal_polarity = TEST_IDAC_POLARITY_SINK;
-static wanbeiyu_uint8_t circle_pad_horizontal_value = 0;
-static void circle_pad_horizontal_source(wanbeiyu_idac_t *super,
-                                         wanbeiyu_uint8_t value) {
-  assert(super != NULL);
-  circle_pad_horizontal_polarity = TEST_IDAC_POLARITY_SOURCE;
-  circle_pad_horizontal_value = value;
-}
-static void circle_pad_horizontal_sink(wanbeiyu_idac_t *super,
-                                       wanbeiyu_uint8_t value) {
-  assert(super != NULL);
-  circle_pad_horizontal_polarity = TEST_IDAC_POLARITY_SINK;
-  circle_pad_horizontal_value = value;
-}
-
-static wanbeiyu_bool_t circle_pad_horizontal_switch_state = WANBEIYU_FALSE;
-static void circle_pad_horizontal_switch_open(wanbeiyu_spst_switch_t *super) {
-  assert(super != NULL);
-  (void)super;
-  circle_pad_horizontal_switch_state = WANBEIYU_FALSE;
-}
-static void circle_pad_horizontal_switch_close(wanbeiyu_spst_switch_t *super) {
-  assert(super != NULL);
-  (void)super;
-  circle_pad_horizontal_switch_state = WANBEIYU_TRUE;
-}
-
-static wanbeiyu_bool_t circle_pad_vertical_polarity = TEST_IDAC_POLARITY_SINK;
-static wanbeiyu_uint8_t circle_pad_vertical_value = 0;
-static void circle_pad_vertical_source(wanbeiyu_idac_t *super,
-                                       wanbeiyu_uint8_t value) {
-  assert(super != NULL);
-  circle_pad_vertical_polarity = TEST_IDAC_POLARITY_SOURCE;
-  circle_pad_vertical_value = value;
-}
-static void circle_pad_vertical_sink(wanbeiyu_idac_t *super,
-                                     wanbeiyu_uint8_t value) {
-  assert(super != NULL);
-  circle_pad_vertical_polarity = TEST_IDAC_POLARITY_SINK;
-  circle_pad_vertical_value = value;
-}
-
-static wanbeiyu_bool_t circle_pad_vertical_switch_state = WANBEIYU_FALSE;
-static void circle_pad_vertical_switch_open(wanbeiyu_spst_switch_t *super) {
-  assert(super != NULL);
-  (void)super;
-  circle_pad_vertical_switch_state = WANBEIYU_FALSE;
-}
-static void circle_pad_vertical_switch_close(wanbeiyu_spst_switch_t *super) {
-  assert(super != NULL);
-  (void)super;
-  circle_pad_vertical_switch_state = WANBEIYU_TRUE;
-}
-
-static void test_circle_pad(void) {
-  wanbeiyu_uint8_t x;
-  wanbeiyu_uint8_t y;
-  wanbeiyu_circle_pad_state_t state;
-
-  wanbeiyu_idac_t circle_pad_horizontal;
-  wanbeiyu_spst_switch_t circle_pad_horizontal_switch;
-  wanbeiyu_idac_t circle_pad_vertical;
-  wanbeiyu_spst_switch_t circle_pad_vertical_switch;
-  wanbeiyu_circle_pad_t circle_pad;
-
-  wanbeiyu_idac_init(&circle_pad_horizontal, circle_pad_horizontal_source,
-                     circle_pad_horizontal_sink);
-  wanbeiyu_spst_switch_init(&circle_pad_horizontal_switch,
-                            circle_pad_horizontal_switch_open,
-                            circle_pad_horizontal_switch_close);
-  wanbeiyu_idac_init(&circle_pad_vertical, circle_pad_vertical_source,
-                     circle_pad_vertical_sink);
-  wanbeiyu_spst_switch_init(&circle_pad_vertical_switch,
-                            circle_pad_vertical_switch_open,
-                            circle_pad_vertical_switch_close);
-  wanbeiyu_circle_pad_init(&circle_pad, &circle_pad_horizontal,
-                           &circle_pad_horizontal_switch, &circle_pad_vertical,
-                           &circle_pad_vertical_switch);
-
-  wanbeiyu_circle_pad_release(&circle_pad);
-  assert(!circle_pad_horizontal_switch_state);
-  assert(!circle_pad_vertical_switch_state);
-
-  x = 0;
-  y = 0;
-  state.x = &x;
-  state.y = &y;
-  wanbeiyu_circle_pad_hold(&circle_pad, &state);
-  assert(circle_pad_horizontal_polarity == TEST_IDAC_POLARITY_SOURCE);
-  assert(circle_pad_horizontal_value == 255);
-  assert(circle_pad_horizontal_switch_state);
-  assert(circle_pad_vertical_polarity == TEST_IDAC_POLARITY_SINK);
-  assert(circle_pad_vertical_value == 255);
-  assert(circle_pad_vertical_switch_state);
-
-  x = 255;
-  y = 255;
-  state.x = &x;
-  state.y = &y;
-  wanbeiyu_circle_pad_hold(&circle_pad, &state);
-  assert(circle_pad_horizontal_polarity == TEST_IDAC_POLARITY_SINK);
-  assert(circle_pad_horizontal_value == 255);
-  assert(circle_pad_horizontal_switch_state);
-  assert(circle_pad_vertical_polarity == TEST_IDAC_POLARITY_SOURCE);
-  assert(circle_pad_vertical_value == 255);
-  assert(circle_pad_vertical_switch_state);
-
-  wanbeiyu_circle_pad_release(&circle_pad);
-  assert(!circle_pad_horizontal_switch_state);
-  assert(!circle_pad_vertical_switch_state);
-
-  x = 128;
-  state.x = &x;
-  state.y = NULL;
-  wanbeiyu_circle_pad_hold(&circle_pad, &state);
-  assert(circle_pad_horizontal_polarity == TEST_IDAC_POLARITY_SINK);
-  assert(circle_pad_horizontal_value == 0);
-  assert(circle_pad_horizontal_switch_state);
-  assert(!circle_pad_vertical_switch_state);
-
-  y = 128;
-  state.x = NULL;
-  state.y = &y;
-  wanbeiyu_circle_pad_hold(&circle_pad, &state);
-  assert(!circle_pad_horizontal_switch_state);
-  assert(circle_pad_vertical_polarity == TEST_IDAC_POLARITY_SOURCE);
-  assert(circle_pad_vertical_value == 0);
-  assert(circle_pad_vertical_switch_state);
-
-  wanbeiyu_circle_pad_release(&circle_pad);
-  assert(!circle_pad_horizontal_switch_state);
-  assert(!circle_pad_vertical_switch_state);
+static void test_impl_init(test_impl_t *impl) {
+  test_uart_init(&(impl->uart));
+  test_spst_switch_init(&(impl->power_sw), power_sw_open, power_sw_close);
+  test_spst_switch_init(&(impl->home_sw), home_sw_open, home_sw_close);
+  test_spst_switch_init(&(impl->zr_sw), zr_sw_open, zr_sw_close);
+  test_spst_switch_init(&(impl->zl_sw), zl_sw_open, zl_sw_close);
+  test_spst_switch_init(&(impl->y_sw), y_sw_open, y_sw_close);
+  test_spst_switch_init(&(impl->x_sw), x_sw_open, x_sw_close);
+  test_spst_switch_init(&(impl->l_sw), l_sw_open, l_sw_close);
+  test_spst_switch_init(&(impl->r_sw), r_sw_open, r_sw_close);
+  test_spst_switch_init(&(impl->down_sw), down_sw_open, down_sw_close);
+  test_spst_switch_init(&(impl->up_sw), up_sw_open, up_sw_close);
+  test_spst_switch_init(&(impl->left_sw), left_sw_open, left_sw_close);
+  test_spst_switch_init(&(impl->right_sw), right_sw_open, right_sw_close);
+  test_spst_switch_init(&(impl->start_sw), start_sw_open, start_sw_close);
+  test_spst_switch_init(&(impl->select_sw), select_sw_open, select_sw_close);
+  test_spst_switch_init(&(impl->b_sw), b_sw_open, b_sw_close);
+  test_spst_switch_init(&(impl->a_sw), a_sw_open, a_sw_close);
+  test_spst_switch_init(&(impl->ts_sw), ts_sw_open, ts_sw_close);
+  test_spst_switch_init(&(impl->csa1_sw), csa1_sw_open, csa1_sw_close);
+  test_spst_switch_init(&(impl->csa3_sw), csa3_sw_open, csa3_sw_close);
+  test_spst_switch_init(&(impl->cpx_sw), cpx_sw_open, cpx_sw_close);
+  test_spst_switch_init(&(impl->cpy_sw), cpy_sw_open, cpy_sw_close);
+  test_rdac_320_steps_init(&(impl->tsx_rdac), tsx_set_wiper_position);
+  test_rdac_240_steps_init(&(impl->tsy_rdac), tsy_set_wiper_position);
+  test_idac_init(&(impl->csa1_idac), csa1_idac_source, csa1_idac_sink);
+  test_idac_init(&(impl->csa3_idac), csa3_idac_source, csa3_idac_sink);
+  test_idac_init(&(impl->cpx_idac), cpx_idac_source, cpx_idac_sink);
+  test_idac_init(&(impl->cpy_idac), cpy_idac_source, cpy_idac_sink);
 }
 
 int main(void) {
-  test_deserialize();
-  test_button();
-  test_touch_screen();
-  test_c_stick();
-  test_circle_pad();
+  wanbeiyu_t wanbeiyu;
+  wanbeiyu_hal_t hal;
+  test_impl_t impl;
 
-  (void)wanbeiyu_console_clear;
+  wanbeiyu_uint8_t input[10] = {
+      WANBEIYU_COMMAND_GET_CONSOLE_STATE, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
+  test_impl_init(&impl);
+  wanbeiyu_hal_init(
+      &hal, &(impl.uart.base), &(impl.power_sw.base), &(impl.home_sw.base),
+      &(impl.zr_sw.base), &(impl.zl_sw.base), &(impl.y_sw.base),
+      &(impl.x_sw.base), &(impl.l_sw.base), &(impl.r_sw.base),
+      &(impl.down_sw.base), &(impl.up_sw.base), &(impl.left_sw.base),
+      &(impl.right_sw.base), &(impl.start_sw.base), &(impl.select_sw.base),
+      &(impl.b_sw.base), &(impl.a_sw.base), &(impl.tsx_rdac.base),
+      &(impl.tsy_rdac.base), &(impl.ts_sw.base), &(impl.csa1_idac.base),
+      &(impl.csa1_sw.base), &(impl.csa3_idac.base), &(impl.csa3_sw.base),
+      &(impl.cpx_idac.base), &(impl.cpx_sw.base), &(impl.cpy_idac.base),
+      &(impl.cpy_sw.base));
+  wanbeiyu_init(&wanbeiyu, &hal);
+
+  wanbeiyu_on_data(&wanbeiyu, input, sizeof(input));
   return 0;
 }
