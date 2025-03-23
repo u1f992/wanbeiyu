@@ -32,31 +32,13 @@ typedef struct wanbeiyu_hal_idac_t {
   void (*sink)(struct wanbeiyu_hal_idac_t *, wanbeiyu_uint8_t);
 } wanbeiyu_hal_idac_t;
 
-static WANBEIYU_INLINE void
-wanbeiyu_hal_idac_init(wanbeiyu_hal_idac_t *idac,
-                       void (*source)(wanbeiyu_hal_idac_t *, wanbeiyu_uint8_t),
-                       void (*sink)(wanbeiyu_hal_idac_t *, wanbeiyu_uint8_t)) {
-  assert(idac != NULL);
-  assert(source != NULL);
-  assert(sink != NULL);
+#define wanbeiyu_hal_idac_source(idac, value)                                  \
+  /* assert((idac) != NULL); */                                                \
+  (idac)->source((idac), (value))
 
-  idac->source = source;
-  idac->sink = sink;
-}
-
-static WANBEIYU_INLINE void wanbeiyu_hal_idac_source(wanbeiyu_hal_idac_t *idac,
-                                                     wanbeiyu_uint8_t value) {
-  assert(idac != NULL);
-
-  idac->source(idac, value);
-}
-
-static WANBEIYU_INLINE void wanbeiyu_hal_idac_sink(wanbeiyu_hal_idac_t *idac,
-                                                   wanbeiyu_uint8_t value) {
-  assert(idac != NULL);
-
-  idac->sink(idac, value);
-}
+#define wanbeiyu_hal_idac_sink(idac, value)                                    \
+  /* assert((idac) != NULL); */                                                \
+  (idac)->sink((idac), (value))
 
 #ifdef __cplusplus
 }

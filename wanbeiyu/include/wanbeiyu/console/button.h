@@ -49,19 +49,13 @@ wanbeiyu_console_button_init(wanbeiyu_console_button_t *button,
   button->switch_ = switch_;
 }
 
-static WANBEIYU_INLINE void
-wanbeiyu_console_button_hold(wanbeiyu_console_button_t *button) {
-  assert(button != NULL);
+#define wanbeiyu_console_button_hold(button)                                   \
+  /* assert((button) != NULL); */                                              \
+  wanbeiyu_hal_spst_switch_close((button)->switch_)
 
-  wanbeiyu_hal_spst_switch_close(button->switch_);
-}
-
-static WANBEIYU_INLINE void
-wanbeiyu_console_button_release(wanbeiyu_console_button_t *button) {
-  assert(button != NULL);
-
-  wanbeiyu_hal_spst_switch_open(button->switch_);
-}
+#define wanbeiyu_console_button_release(button)                                \
+  /* assert((button) != NULL); */                                              \
+  wanbeiyu_hal_spst_switch_open((button)->switch_)
 
 #ifdef __cplusplus
 }

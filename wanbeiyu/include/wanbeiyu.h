@@ -51,7 +51,7 @@ typedef struct wanbeiyu_t {
 } wanbeiyu_t;
 
 static WANBEIYU_INLINE void wanbeiyu_init(wanbeiyu_t *wanbeiyu,
-                                          wanbeiyu_hal_t *hal) {
+                                          const wanbeiyu_hal_t *hal) {
   assert(wanbeiyu != NULL);
   assert(hal != NULL);
 

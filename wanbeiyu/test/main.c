@@ -30,17 +30,6 @@ typedef struct test_spst_switch_t {
   test_spst_switch_state_t state;
 } test_spst_switch_t;
 
-static void test_spst_switch_init(test_spst_switch_t *switch_,
-                                  void (*open)(wanbeiyu_hal_spst_switch_t *),
-                                  void (*close)(wanbeiyu_hal_spst_switch_t *)) {
-  assert(switch_ != NULL);
-  assert(open != NULL);
-  assert(close != NULL);
-
-  wanbeiyu_hal_spst_switch_init(&(switch_->base), open, close);
-  switch_->state = TEST_SPST_SWITCH_OPEN;
-}
-
 static void power_sw_open(wanbeiyu_hal_spst_switch_t *switch_) {
   assert(switch_ != NULL);
 
@@ -283,19 +272,6 @@ typedef struct test_idac_t {
   wanbeiyu_uint8_t value;
 } test_idac_t;
 
-static void
-test_idac_init(test_idac_t *idac,
-               void (*source)(wanbeiyu_hal_idac_t *, wanbeiyu_uint8_t),
-               void (*sink)(wanbeiyu_hal_idac_t *, wanbeiyu_uint8_t)) {
-  assert(idac != NULL);
-  assert(source != NULL);
-  assert(sink != NULL);
-
-  wanbeiyu_hal_idac_init(&(idac->base), source, sink);
-  idac->state = TEST_IDAC_SINK;
-  idac->value = 0;
-}
-
 static void csa1_idac_source(wanbeiyu_hal_idac_t *idac,
                              wanbeiyu_uint8_t value) {
   assert(idac != NULL);
@@ -355,17 +331,6 @@ typedef struct test_rdac_320_steps_t {
   wanbeiyu_uint16_t position;
 } test_rdac_320_steps_t;
 
-static void test_rdac_320_steps_init(
-    test_rdac_320_steps_t *rdac,
-    void (*set_wiper_position)(wanbeiyu_hal_rdac_320_steps_t *,
-                               wanbeiyu_uint16_t)) {
-  assert(rdac != NULL);
-  assert(set_wiper_position != NULL);
-
-  wanbeiyu_hal_rdac_320_steps_init(&(rdac->base), set_wiper_position);
-  rdac->position = 0;
-}
-
 static void tsx_set_wiper_position(wanbeiyu_hal_rdac_320_steps_t *rdac,
                                    wanbeiyu_uint16_t position) {
   assert(rdac != NULL);
@@ -378,17 +343,6 @@ typedef struct test_rdac_240_steps_t {
   wanbeiyu_hal_rdac_240_steps_t base;
   wanbeiyu_uint8_t position;
 } test_rdac_240_steps_t;
-
-static void test_rdac_240_steps_init(
-    test_rdac_240_steps_t *rdac,
-    void (*set_wiper_position)(wanbeiyu_hal_rdac_240_steps_t *,
-                               wanbeiyu_uint8_t)) {
-  assert(rdac != NULL);
-  assert(set_wiper_position != NULL);
-
-  wanbeiyu_hal_rdac_240_steps_init(&(rdac->base), set_wiper_position);
-  rdac->position = 0;
-}
 
 static void tsy_set_wiper_position(wanbeiyu_hal_rdac_240_steps_t *rdac,
                                    wanbeiyu_uint8_t position) {
@@ -415,13 +369,7 @@ static void test_uart_write(wanbeiyu_hal_uart_t *uart,
   fprintf(stderr, "\n");
 }
 
-static void test_uart_init(test_uart_t *uart) {
-  assert(uart != NULL);
-
-  wanbeiyu_hal_uart_init(&(uart->base), test_uart_write);
-}
-
-typedef struct test_impl_t {
+static const struct {
   test_uart_t uart;
   test_spst_switch_t power_sw;
   test_spst_switch_t home_sw;
@@ -450,59 +398,63 @@ typedef struct test_impl_t {
   test_idac_t csa3_idac;
   test_idac_t cpx_idac;
   test_idac_t cpy_idac;
-} test_impl_t;
+} impl = {{{test_uart_write}},
+          {{power_sw_open, power_sw_close}, TEST_SPST_SWITCH_OPEN},
+          {{home_sw_open, home_sw_close}, TEST_SPST_SWITCH_OPEN},
+          {{zr_sw_open, zr_sw_close}, TEST_SPST_SWITCH_OPEN},
+          {{zl_sw_open, zl_sw_close}, TEST_SPST_SWITCH_OPEN},
+          {{y_sw_open, y_sw_close}, TEST_SPST_SWITCH_OPEN},
+          {{x_sw_open, x_sw_close}, TEST_SPST_SWITCH_OPEN},
+          {{l_sw_open, l_sw_close}, TEST_SPST_SWITCH_OPEN},
+          {{r_sw_open, r_sw_close}, TEST_SPST_SWITCH_OPEN},
+          {{down_sw_open, down_sw_close}, TEST_SPST_SWITCH_OPEN},
+          {{up_sw_open, up_sw_close}, TEST_SPST_SWITCH_OPEN},
+          {{left_sw_open, left_sw_close}, TEST_SPST_SWITCH_OPEN},
+          {{right_sw_open, right_sw_close}, TEST_SPST_SWITCH_OPEN},
+          {{start_sw_open, start_sw_close}, TEST_SPST_SWITCH_OPEN},
+          {{select_sw_open, select_sw_close}, TEST_SPST_SWITCH_OPEN},
+          {{b_sw_open, b_sw_close}, TEST_SPST_SWITCH_OPEN},
+          {{a_sw_open, a_sw_close}, TEST_SPST_SWITCH_OPEN},
+          {{ts_sw_open, ts_sw_close}, TEST_SPST_SWITCH_OPEN},
+          {{csa1_sw_open, csa1_sw_close}, TEST_SPST_SWITCH_OPEN},
+          {{csa3_sw_open, csa3_sw_close}, TEST_SPST_SWITCH_OPEN},
+          {{cpx_sw_open, cpx_sw_close}, TEST_SPST_SWITCH_OPEN},
+          {{cpy_sw_open, cpy_sw_close}, TEST_SPST_SWITCH_OPEN},
+          {{tsx_set_wiper_position}, 0},
+          {{tsy_set_wiper_position}, 0},
+          {{csa1_idac_source, csa1_idac_sink}, TEST_IDAC_SINK, 0},
+          {{csa3_idac_source, csa3_idac_sink}, TEST_IDAC_SINK, 0},
+          {{cpx_idac_source, cpx_idac_sink}, TEST_IDAC_SINK, 0},
+          {{cpy_idac_source, cpy_idac_sink}, TEST_IDAC_SINK, 0}};
 
-static void test_impl_init(test_impl_t *impl) {
-  test_uart_init(&(impl->uart));
-  test_spst_switch_init(&(impl->power_sw), power_sw_open, power_sw_close);
-  test_spst_switch_init(&(impl->home_sw), home_sw_open, home_sw_close);
-  test_spst_switch_init(&(impl->zr_sw), zr_sw_open, zr_sw_close);
-  test_spst_switch_init(&(impl->zl_sw), zl_sw_open, zl_sw_close);
-  test_spst_switch_init(&(impl->y_sw), y_sw_open, y_sw_close);
-  test_spst_switch_init(&(impl->x_sw), x_sw_open, x_sw_close);
-  test_spst_switch_init(&(impl->l_sw), l_sw_open, l_sw_close);
-  test_spst_switch_init(&(impl->r_sw), r_sw_open, r_sw_close);
-  test_spst_switch_init(&(impl->down_sw), down_sw_open, down_sw_close);
-  test_spst_switch_init(&(impl->up_sw), up_sw_open, up_sw_close);
-  test_spst_switch_init(&(impl->left_sw), left_sw_open, left_sw_close);
-  test_spst_switch_init(&(impl->right_sw), right_sw_open, right_sw_close);
-  test_spst_switch_init(&(impl->start_sw), start_sw_open, start_sw_close);
-  test_spst_switch_init(&(impl->select_sw), select_sw_open, select_sw_close);
-  test_spst_switch_init(&(impl->b_sw), b_sw_open, b_sw_close);
-  test_spst_switch_init(&(impl->a_sw), a_sw_open, a_sw_close);
-  test_spst_switch_init(&(impl->ts_sw), ts_sw_open, ts_sw_close);
-  test_spst_switch_init(&(impl->csa1_sw), csa1_sw_open, csa1_sw_close);
-  test_spst_switch_init(&(impl->csa3_sw), csa3_sw_open, csa3_sw_close);
-  test_spst_switch_init(&(impl->cpx_sw), cpx_sw_open, cpx_sw_close);
-  test_spst_switch_init(&(impl->cpy_sw), cpy_sw_open, cpy_sw_close);
-  test_rdac_320_steps_init(&(impl->tsx_rdac), tsx_set_wiper_position);
-  test_rdac_240_steps_init(&(impl->tsy_rdac), tsy_set_wiper_position);
-  test_idac_init(&(impl->csa1_idac), csa1_idac_source, csa1_idac_sink);
-  test_idac_init(&(impl->csa3_idac), csa3_idac_source, csa3_idac_sink);
-  test_idac_init(&(impl->cpx_idac), cpx_idac_source, cpx_idac_sink);
-  test_idac_init(&(impl->cpy_idac), cpy_idac_source, cpy_idac_sink);
-}
+static const wanbeiyu_hal_t hal = {
+    &(impl.uart.base),
+    &(impl.power_sw.base),
+    &(impl.home_sw.base),
+    &(impl.zr_sw.base),
+    &(impl.zl_sw.base),
+    &(impl.y_sw.base),
+    &(impl.x_sw.base),
+    &(impl.l_sw.base),
+    &(impl.r_sw.base),
+    &(impl.down_sw.base),
+    &(impl.up_sw.base),
+    &(impl.left_sw.base),
+    &(impl.right_sw.base),
+    &(impl.start_sw.base),
+    &(impl.select_sw.base),
+    &(impl.b_sw.base),
+    &(impl.a_sw.base),
+    {&(impl.tsx_rdac.base), &(impl.tsy_rdac.base), &(impl.ts_sw.base)},
+    {&(impl.csa1_idac.base), &(impl.csa1_sw.base), &(impl.csa3_idac.base),
+     &(impl.csa3_sw.base)},
+    {&(impl.cpx_idac.base), &(impl.cpx_sw.base), &(impl.cpy_idac.base),
+     &(impl.cpy_sw.base)}};
 
 int main(void) {
   wanbeiyu_t wanbeiyu;
-  wanbeiyu_hal_t hal;
-  test_impl_t impl;
 
-  wanbeiyu_uint8_t input[10] = {
-      WANBEIYU_COMMAND_GET_CONSOLE_STATE, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-
-  test_impl_init(&impl);
-  wanbeiyu_hal_init(
-      &hal, &(impl.uart.base), &(impl.power_sw.base), &(impl.home_sw.base),
-      &(impl.zr_sw.base), &(impl.zl_sw.base), &(impl.y_sw.base),
-      &(impl.x_sw.base), &(impl.l_sw.base), &(impl.r_sw.base),
-      &(impl.down_sw.base), &(impl.up_sw.base), &(impl.left_sw.base),
-      &(impl.right_sw.base), &(impl.start_sw.base), &(impl.select_sw.base),
-      &(impl.b_sw.base), &(impl.a_sw.base), &(impl.tsx_rdac.base),
-      &(impl.tsy_rdac.base), &(impl.ts_sw.base), &(impl.csa1_idac.base),
-      &(impl.csa1_sw.base), &(impl.csa3_idac.base), &(impl.csa3_sw.base),
-      &(impl.cpx_idac.base), &(impl.cpx_sw.base), &(impl.cpy_idac.base),
-      &(impl.cpy_sw.base));
+  wanbeiyu_uint8_t input[10] = {WANBEIYU_COMMAND_GET_CONSOLE_STATE};
   wanbeiyu_init(&wanbeiyu, &hal);
 
   wanbeiyu_on_data(&wanbeiyu, input, sizeof(input));

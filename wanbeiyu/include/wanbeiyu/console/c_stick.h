@@ -77,16 +77,31 @@ wanbeiyu_console_c_stick_hold(wanbeiyu_console_c_stick_t *c_stick,
   assert(-255 <= d1 && d1 <= 255);
   assert(-255 <= d3 && d3 <= 255);
 
-  (d1 > 0 ? wanbeiyu_hal_idac_source : wanbeiyu_hal_idac_sink)(
-      c_stick->axis1, (wanbeiyu_uint8_t)wanbeiyu_internal_abs(d1));
-  (d1 == 0 && x == y ? wanbeiyu_hal_spst_switch_open
-                     : wanbeiyu_hal_spst_switch_close)(c_stick->axis1_switch);
+  if (d1 > 0) {
+    wanbeiyu_hal_idac_source(c_stick->axis1,
+                             (wanbeiyu_uint8_t)wanbeiyu_internal_abs(d1));
+  } else {
+    wanbeiyu_hal_idac_sink(c_stick->axis1,
+                           (wanbeiyu_uint8_t)wanbeiyu_internal_abs(d1));
+  }
+  if (d1 == 0 && x == y) {
+    wanbeiyu_hal_spst_switch_open(c_stick->axis1_switch);
+  } else {
+    wanbeiyu_hal_spst_switch_close(c_stick->axis1_switch);
+  }
 
-  (d3 > 0 ? wanbeiyu_hal_idac_source : wanbeiyu_hal_idac_sink)(
-      c_stick->axis3, (wanbeiyu_uint8_t)wanbeiyu_internal_abs(d3));
-  (d3 == 0 && 255 - x == y
-       ? wanbeiyu_hal_spst_switch_open
-       : wanbeiyu_hal_spst_switch_close)(c_stick->axis3_switch);
+  if (d3 > 0) {
+    wanbeiyu_hal_idac_source(c_stick->axis3,
+                             (wanbeiyu_uint8_t)wanbeiyu_internal_abs(d3));
+  } else {
+    wanbeiyu_hal_idac_sink(c_stick->axis3,
+                           (wanbeiyu_uint8_t)wanbeiyu_internal_abs(d3));
+  }
+  if (d3 == 0 && 255 - x == y) {
+    wanbeiyu_hal_spst_switch_open(c_stick->axis3_switch);
+  } else {
+    wanbeiyu_hal_spst_switch_close(c_stick->axis3_switch);
+  }
 }
 
 static WANBEIYU_INLINE void

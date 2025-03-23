@@ -61,12 +61,9 @@ static WANBEIYU_INLINE void wanbeiyu_console_touch_screen_init(
   touch_screen->switch_ = switch_;
 }
 
-static WANBEIYU_INLINE void wanbeiyu_console_touch_screen_release(
-    wanbeiyu_console_touch_screen_t *touch_screen) {
-  assert(touch_screen != NULL);
-
-  wanbeiyu_hal_spst_switch_open(touch_screen->switch_);
-}
+#define wanbeiyu_console_touch_screen_release(touch_screen)                    \
+  /* assert((touch_screen) != NULL); */                                        \
+  wanbeiyu_hal_spst_switch_open((touch_screen)->switch_)
 
 static WANBEIYU_INLINE void wanbeiyu_console_touch_screen_hold(
     wanbeiyu_console_touch_screen_t *touch_screen,

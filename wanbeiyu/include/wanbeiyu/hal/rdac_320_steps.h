@@ -39,23 +39,10 @@ typedef struct wanbeiyu_hal_rdac_320_steps_t {
                              wanbeiyu_uint16_t);
 } wanbeiyu_hal_rdac_320_steps_t;
 
-static WANBEIYU_INLINE void wanbeiyu_hal_rdac_320_steps_init(
-    wanbeiyu_hal_rdac_320_steps_t *rdac,
-    void (*set_wiper_position)(wanbeiyu_hal_rdac_320_steps_t *,
-                               wanbeiyu_uint16_t)) {
-  assert(rdac != NULL);
-  assert(set_wiper_position != NULL);
-
-  rdac->set_wiper_position = set_wiper_position;
-}
-
-static WANBEIYU_INLINE void wanbeiyu_hal_rdac_320_steps_set_wiper_position(
-    wanbeiyu_hal_rdac_320_steps_t *rdac, wanbeiyu_uint16_t position) {
-  assert(rdac != NULL);
-  assert(position < 320);
-
-  rdac->set_wiper_position(rdac, position);
-}
+#define wanbeiyu_hal_rdac_320_steps_set_wiper_position(rdac, position)         \
+  /* assert((rdac) != NULL); */                                                \
+  /* assert((position) < 320); */                                              \
+  (rdac)->set_wiper_position((rdac), (position))
 
 #ifdef __cplusplus
 }

@@ -28,22 +28,9 @@ typedef struct wanbeiyu_hal_uart_t {
   void (*write)(struct wanbeiyu_hal_uart_t *, const wanbeiyu_uint8_t *, size_t);
 } wanbeiyu_hal_uart_t;
 
-static WANBEIYU_INLINE void wanbeiyu_hal_uart_init(
-    wanbeiyu_hal_uart_t *uart,
-    void (*write)(wanbeiyu_hal_uart_t *, const wanbeiyu_uint8_t *, size_t)) {
-  assert(uart != NULL);
-  assert(write != NULL);
-
-  uart->write = write;
-}
-
-static WANBEIYU_INLINE void
-wanbeiyu_hal_uart_write(wanbeiyu_hal_uart_t *uart,
-                        const wanbeiyu_uint8_t *buffer, size_t length) {
-  assert(uart != NULL);
-
-  uart->write(uart, buffer, length);
-}
+#define wanbeiyu_hal_uart_write(uart, buffer, length)                          \
+  /* assert(uart != NULL); */                                                  \
+  (uart)->write((uart), (buffer), (length))
 
 #ifdef __cplusplus
 }

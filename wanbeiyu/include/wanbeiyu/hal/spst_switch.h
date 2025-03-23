@@ -38,31 +38,13 @@ typedef struct wanbeiyu_hal_spst_switch_t {
   void (*close)(struct wanbeiyu_hal_spst_switch_t *);
 } wanbeiyu_hal_spst_switch_t;
 
-static WANBEIYU_INLINE void
-wanbeiyu_hal_spst_switch_init(wanbeiyu_hal_spst_switch_t *switch_,
-                              void (*open)(wanbeiyu_hal_spst_switch_t *),
-                              void (*close)(wanbeiyu_hal_spst_switch_t *)) {
-  assert(switch_ != NULL);
-  assert(open != NULL);
-  assert(close != NULL);
+#define wanbeiyu_hal_spst_switch_open(switch_)                                 \
+  /* assert((switch_) != NULL); */                                             \
+  (switch_)->open((switch_))
 
-  switch_->open = open;
-  switch_->close = close;
-}
-
-static WANBEIYU_INLINE void
-wanbeiyu_hal_spst_switch_open(wanbeiyu_hal_spst_switch_t *switch_) {
-  assert(switch_ != NULL);
-
-  switch_->open(switch_);
-}
-
-static WANBEIYU_INLINE void
-wanbeiyu_hal_spst_switch_close(wanbeiyu_hal_spst_switch_t *switch_) {
-  assert(switch_ != NULL);
-
-  switch_->close(switch_);
-}
+#define wanbeiyu_hal_spst_switch_close(switch_)                                \
+  /* assert((switch_) != NULL); */                                             \
+  (switch_)->close((switch_))
 
 #ifdef __cplusplus
 }
