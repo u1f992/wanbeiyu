@@ -15,15 +15,48 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef WANBEIYU_CONSOLE_BUTTON_H
-#define WANBEIYU_CONSOLE_BUTTON_H
+#ifndef WANBEIYU_BUTTONS_H
+#define WANBEIYU_BUTTONS_H
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#include "../hal.h"
+#include "hal.h"
 #include "state.h"
+
+extern void wanbeiyu_hal_spst_switch_buttons_power_set(
+    wanbeiyu_hal_spst_switch_state_t);
+extern void
+    wanbeiyu_hal_spst_switch_buttons_home_set(wanbeiyu_hal_spst_switch_state_t);
+extern void
+    wanbeiyu_hal_spst_switch_buttons_zr_set(wanbeiyu_hal_spst_switch_state_t);
+extern void
+    wanbeiyu_hal_spst_switch_buttons_zl_set(wanbeiyu_hal_spst_switch_state_t);
+extern void
+    wanbeiyu_hal_spst_switch_buttons_y_set(wanbeiyu_hal_spst_switch_state_t);
+extern void
+    wanbeiyu_hal_spst_switch_buttons_x_set(wanbeiyu_hal_spst_switch_state_t);
+extern void
+    wanbeiyu_hal_spst_switch_buttons_l_set(wanbeiyu_hal_spst_switch_state_t);
+extern void
+    wanbeiyu_hal_spst_switch_buttons_r_set(wanbeiyu_hal_spst_switch_state_t);
+extern void
+    wanbeiyu_hal_spst_switch_buttons_down_set(wanbeiyu_hal_spst_switch_state_t);
+extern void
+    wanbeiyu_hal_spst_switch_buttons_up_set(wanbeiyu_hal_spst_switch_state_t);
+extern void
+    wanbeiyu_hal_spst_switch_buttons_left_set(wanbeiyu_hal_spst_switch_state_t);
+extern void wanbeiyu_hal_spst_switch_buttons_right_set(
+    wanbeiyu_hal_spst_switch_state_t);
+extern void wanbeiyu_hal_spst_switch_buttons_start_set(
+    wanbeiyu_hal_spst_switch_state_t);
+extern void wanbeiyu_hal_spst_switch_buttons_select_set(
+    wanbeiyu_hal_spst_switch_state_t);
+extern void
+    wanbeiyu_hal_spst_switch_buttons_b_set(wanbeiyu_hal_spst_switch_state_t);
+extern void
+    wanbeiyu_hal_spst_switch_buttons_a_set(wanbeiyu_hal_spst_switch_state_t);
 
 /**
  *      ^ 1v8
@@ -36,8 +69,7 @@ extern "C" {
  *               |
  *               v GND
  */
-static WANBEIYU_INLINE void
-wanbeiyu_console_buttons_set(wanbeiyu_uint16_t states) {
+static WANBEIYU_INLINE void wanbeiyu_buttons_set(wanbeiyu_uint16_t states) {
   wanbeiyu_hal_spst_switch_buttons_power_set((states >> 15) & 1);
   wanbeiyu_hal_spst_switch_buttons_home_set((states >> 14) & 1);
   wanbeiyu_hal_spst_switch_buttons_zr_set((states >> 13) & 1);
@@ -60,4 +92,4 @@ wanbeiyu_console_buttons_set(wanbeiyu_uint16_t states) {
 }
 #endif
 
-#endif /* WANBEIYU_CONSOLE_BUTTON_H */
+#endif /* WANBEIYU_BUTTONS_H */

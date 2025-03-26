@@ -15,14 +15,14 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef WANBEIYU_CONSOLE_STATE_H
-#define WANBEIYU_CONSOLE_STATE_H
+#ifndef WANBEIYU_STATE_H
+#define WANBEIYU_STATE_H
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#include "../compat.h"
+#include "compat.h"
 
 /* clang-format off */
 /*
@@ -135,7 +135,7 @@ typedef struct wanbeiyu_c_stick_state_t {
 
 typedef wanbeiyu_c_stick_state_t wanbeiyu_circle_pad_state_t;
 
-typedef struct wanbeiyu_console_state_t {
+typedef struct wanbeiyu_state_t {
   wanbeiyu_uint16_t buttons;
   wanbeiyu_touch_screen_state_t *touch_screen;
   wanbeiyu_c_stick_state_t c_stick;
@@ -152,10 +152,9 @@ typedef struct wanbeiyu_console_state_t {
     wanbeiyu_uint8_t x;
     wanbeiyu_uint8_t y;
   } stash_circle_pad;
-} wanbeiyu_console_state_t;
+} wanbeiyu_state_t;
 
-static WANBEIYU_INLINE void
-wanbeiyu_console_state_reset(wanbeiyu_console_state_t *state) {
+static WANBEIYU_INLINE void wanbeiyu_state_reset(wanbeiyu_state_t *state) {
   assert(state != NULL);
 
   state->buttons = 0;
@@ -176,8 +175,8 @@ wanbeiyu_console_state_reset(wanbeiyu_console_state_t *state) {
 }
 
 static WANBEIYU_INLINE void
-wanbeiyu_console_state_deserialize(const wanbeiyu_uint8_t *buffer,
-                                   wanbeiyu_console_state_t *state) {
+wanbeiyu_state_deserialize(const wanbeiyu_uint8_t *buffer,
+                           wanbeiyu_state_t *state) {
 
   assert(buffer != NULL);
   /* assert(sizeof(buffer) == 9); */
@@ -206,8 +205,8 @@ wanbeiyu_console_state_deserialize(const wanbeiyu_uint8_t *buffer,
 }
 
 static WANBEIYU_INLINE void
-wanbeiyu_console_state_serialize(const wanbeiyu_console_state_t *state,
-                                 wanbeiyu_uint8_t *buffer) {
+wanbeiyu_state_serialize(const wanbeiyu_state_t *state,
+                         wanbeiyu_uint8_t *buffer) {
   assert(state != NULL);
   assert(buffer != NULL);
   /* assert(sizeof(buffer) == 9); */
@@ -235,4 +234,4 @@ wanbeiyu_console_state_serialize(const wanbeiyu_console_state_t *state,
 }
 #endif
 
-#endif /* WANBEIYU_CONSOLE_STATE_H */
+#endif /* WANBEIYU_STATE_H */

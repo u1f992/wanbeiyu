@@ -15,15 +15,26 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef WANBEIYU_CONSOLE_C_STICK_H
-#define WANBEIYU_CONSOLE_C_STICK_H
+#ifndef WANBEIYU_C_STICK_H
+#define WANBEIYU_C_STICK_H
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#include "../hal.h"
+#include "hal.h"
 #include "state.h"
+
+extern void
+    wanbeiyu_hal_idac_c_stick_positive_slope_set(wanbeiyu_hal_idac_mode_t,
+                                                 wanbeiyu_uint8_t);
+extern void wanbeiyu_hal_spst_switch_c_stick_positive_slope_switch_set(
+    wanbeiyu_hal_spst_switch_state_t);
+extern void
+    wanbeiyu_hal_idac_c_stick_negative_slope_set(wanbeiyu_hal_idac_mode_t,
+                                                 wanbeiyu_uint8_t);
+extern void wanbeiyu_hal_spst_switch_c_stick_negative_slope_switch_set(
+    wanbeiyu_hal_spst_switch_state_t);
 
 /**
  *   1+         3+
@@ -44,7 +55,7 @@ static WANBEIYU_INLINE int wanbeiyu_internal_abs(int value) {
 }
 
 static WANBEIYU_INLINE void
-wanbeiyu_console_c_stick_set(const wanbeiyu_c_stick_state_t *state) {
+wanbeiyu_c_stick_set(const wanbeiyu_c_stick_state_t *state) {
   /*
    * d1 = signed_distance_to(y=x) / DISTANCE_MAX * UINT8_MAX
    * d3 = signed_distance_to(y=-x+255) / DISTANCE_MAX * UINT8_MAX
@@ -67,39 +78,23 @@ wanbeiyu_console_c_stick_set(const wanbeiyu_c_stick_state_t *state) {
   assert(-255 <= d1 && d1 <= 255);
   assert(-255 <= d3 && d3 <= 255);
 
-  if (d1 > 0) {
-    wanbeiyu_hal_idac_c_stick_negative_slope_set(
-        WANBEIYU_HAL_IDAC_SOURCE, (wanbeiyu_uint8_t)wanbeiyu_internal_abs(d1));
-  } else {
-    wanbeiyu_hal_idac_c_stick_negative_slope_set(
-        WANBEIYU_HAL_IDAC_SINK, (wanbeiyu_uint8_t)wanbeiyu_internal_abs(d1));
-  }
-  if (d1 == 0 && x == y) {
-    wanbeiyu_hal_spst_switch_c_stick_negative_slope_switch_set(
-        WANBEIYU_HAL_SPST_SWITCH_OPEN);
-  } else {
-    wanbeiyu_hal_spst_switch_c_stick_negative_slope_switch_set(
-        WANBEIYU_HAL_SPST_SWITCH_CLOSE);
-  }
+  wanbeiyu_hal_idac_c_stick_negative_slope_set(
+      d1 > 0 ? WANBEIYU_HAL_IDAC_SOURCE : WANBEIYU_HAL_IDAC_SINK,
+      (wanbeiyu_uint8_t)wanbeiyu_internal_abs(d1));
+  wanbeiyu_hal_spst_switch_c_stick_negative_slope_switch_set(
+      d1 == 0 && x == y ? WANBEIYU_HAL_SPST_SWITCH_OPEN
+                        : WANBEIYU_HAL_SPST_SWITCH_CLOSE);
 
-  if (d3 > 0) {
-    wanbeiyu_hal_idac_c_stick_positive_slope_set(
-        WANBEIYU_HAL_IDAC_SOURCE, (wanbeiyu_uint8_t)wanbeiyu_internal_abs(d3));
-  } else {
-    wanbeiyu_hal_idac_c_stick_positive_slope_set(
-        WANBEIYU_HAL_IDAC_SINK, (wanbeiyu_uint8_t)wanbeiyu_internal_abs(d3));
-  }
-  if (d3 == 0 && 255 - x == y) {
-    wanbeiyu_hal_spst_switch_c_stick_positive_slope_switch_set(
-        WANBEIYU_HAL_SPST_SWITCH_OPEN);
-  } else {
-    wanbeiyu_hal_spst_switch_c_stick_positive_slope_switch_set(
-        WANBEIYU_HAL_SPST_SWITCH_CLOSE);
-  }
+  wanbeiyu_hal_idac_c_stick_positive_slope_set(
+      d3 > 0 ? WANBEIYU_HAL_IDAC_SOURCE : WANBEIYU_HAL_IDAC_SINK,
+      (wanbeiyu_uint8_t)wanbeiyu_internal_abs(d3));
+  wanbeiyu_hal_spst_switch_c_stick_positive_slope_switch_set(
+      d3 == 0 && 255 - x == y ? WANBEIYU_HAL_SPST_SWITCH_OPEN
+                              : WANBEIYU_HAL_SPST_SWITCH_CLOSE);
 }
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* WANBEIYU_CONSOLE_C_STICK_H */
+#endif /* WANBEIYU_C_STICK_H */

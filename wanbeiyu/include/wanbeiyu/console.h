@@ -22,21 +22,21 @@
 extern "C" {
 #endif
 
-#include "console/button.h"
-#include "console/c_stick.h"
-#include "console/circle_pad.h"
-#include "console/state.h"
-#include "console/touch_screen.h"
+#include "buttons.h"
+#include "c_stick.h"
+#include "circle_pad.h"
 #include "hal.h"
+#include "state.h"
+#include "touch_screen.h"
 
 static WANBEIYU_INLINE void
-wanbeiyu_console_set(const wanbeiyu_console_state_t *state) {
+wanbeiyu_console_set(const wanbeiyu_state_t *state) {
   assert(state != NULL);
 
-  wanbeiyu_console_buttons_set(state->buttons);
-  wanbeiyu_console_touch_screen_set(state->touch_screen);
-  wanbeiyu_console_c_stick_set(&(state->c_stick));
-  wanbeiyu_console_circle_pad_set(&(state->circle_pad));
+  wanbeiyu_buttons_set(state->buttons);
+  wanbeiyu_touch_screen_set(state->touch_screen);
+  wanbeiyu_c_stick_set(&(state->c_stick));
+  wanbeiyu_circle_pad_set(&(state->circle_pad));
 }
 
 #ifdef __cplusplus

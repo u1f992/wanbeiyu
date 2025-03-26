@@ -15,15 +15,20 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef WANBEIYU_CONSOLE_TOUCH_SCREEN_H
-#define WANBEIYU_CONSOLE_TOUCH_SCREEN_H
+#ifndef WANBEIYU_TOUCH_SCREEN_H
+#define WANBEIYU_TOUCH_SCREEN_H
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#include "../hal.h"
+#include "hal.h"
 #include "state.h"
+
+extern void wanbeiyu_hal_rdac_touch_screen_horizontal_set(wanbeiyu_uint16_t);
+extern void wanbeiyu_hal_rdac_touch_screen_vertical_set(wanbeiyu_uint8_t);
+extern void
+    wanbeiyu_hal_spst_switch_touch_screen_set(wanbeiyu_hal_spst_switch_state_t);
 
 /**
  *   | Y_{B}
@@ -39,7 +44,7 @@ extern "C" {
  * (Pin numbers of Molex 5014610491)
  */
 static WANBEIYU_INLINE void
-wanbeiyu_console_touch_screen_set(const wanbeiyu_touch_screen_state_t *state) {
+wanbeiyu_touch_screen_set(const wanbeiyu_touch_screen_state_t *state) {
   if (state == NULL) {
     wanbeiyu_hal_spst_switch_touch_screen_set(WANBEIYU_HAL_SPST_SWITCH_OPEN);
   } else {
@@ -55,4 +60,4 @@ wanbeiyu_console_touch_screen_set(const wanbeiyu_touch_screen_state_t *state) {
 }
 #endif
 
-#endif /* WANBEIYU_CONSOLE_TOUCH_SCREEN_H */
+#endif /* WANBEIYU_TOUCH_SCREEN_H */

@@ -35,65 +35,6 @@ typedef enum wanbeiyu_hal_idac_mode_t {
   WANBEIYU_HAL_IDAC_SOURCE
 } wanbeiyu_hal_idac_mode_t;
 
-extern void wanbeiyu_hal_spst_switch_buttons_power_set(
-    wanbeiyu_hal_spst_switch_state_t);
-extern void
-    wanbeiyu_hal_spst_switch_buttons_home_set(wanbeiyu_hal_spst_switch_state_t);
-extern void
-    wanbeiyu_hal_spst_switch_buttons_zr_set(wanbeiyu_hal_spst_switch_state_t);
-extern void
-    wanbeiyu_hal_spst_switch_buttons_zl_set(wanbeiyu_hal_spst_switch_state_t);
-extern void
-    wanbeiyu_hal_spst_switch_buttons_y_set(wanbeiyu_hal_spst_switch_state_t);
-extern void
-    wanbeiyu_hal_spst_switch_buttons_x_set(wanbeiyu_hal_spst_switch_state_t);
-extern void
-    wanbeiyu_hal_spst_switch_buttons_l_set(wanbeiyu_hal_spst_switch_state_t);
-extern void
-    wanbeiyu_hal_spst_switch_buttons_r_set(wanbeiyu_hal_spst_switch_state_t);
-extern void
-    wanbeiyu_hal_spst_switch_buttons_down_set(wanbeiyu_hal_spst_switch_state_t);
-extern void
-    wanbeiyu_hal_spst_switch_buttons_up_set(wanbeiyu_hal_spst_switch_state_t);
-extern void
-    wanbeiyu_hal_spst_switch_buttons_left_set(wanbeiyu_hal_spst_switch_state_t);
-extern void wanbeiyu_hal_spst_switch_buttons_right_set(
-    wanbeiyu_hal_spst_switch_state_t);
-extern void wanbeiyu_hal_spst_switch_buttons_start_set(
-    wanbeiyu_hal_spst_switch_state_t);
-extern void wanbeiyu_hal_spst_switch_buttons_select_set(
-    wanbeiyu_hal_spst_switch_state_t);
-extern void
-    wanbeiyu_hal_spst_switch_buttons_b_set(wanbeiyu_hal_spst_switch_state_t);
-extern void
-    wanbeiyu_hal_spst_switch_buttons_a_set(wanbeiyu_hal_spst_switch_state_t);
-
-extern void wanbeiyu_hal_rdac_touch_screen_horizontal_set(wanbeiyu_uint16_t);
-extern void wanbeiyu_hal_rdac_touch_screen_vertical_set(wanbeiyu_uint8_t);
-extern void
-    wanbeiyu_hal_spst_switch_touch_screen_set(wanbeiyu_hal_spst_switch_state_t);
-
-extern void
-    wanbeiyu_hal_idac_c_stick_positive_slope_set(wanbeiyu_hal_idac_mode_t,
-                                                 wanbeiyu_uint8_t);
-extern void wanbeiyu_hal_spst_switch_c_stick_positive_slope_switch_set(
-    wanbeiyu_hal_spst_switch_state_t);
-extern void
-    wanbeiyu_hal_idac_c_stick_negative_slope_set(wanbeiyu_hal_idac_mode_t,
-                                                 wanbeiyu_uint8_t);
-extern void wanbeiyu_hal_spst_switch_c_stick_negative_slope_switch_set(
-    wanbeiyu_hal_spst_switch_state_t);
-
-extern void
-    wanbeiyu_hal_idac_circle_pad_horizontal_set(wanbeiyu_hal_idac_mode_t,
-                                                wanbeiyu_uint8_t);
-extern void wanbeiyu_hal_spst_switch_circle_pad_horizontal_set(
-    wanbeiyu_hal_spst_switch_state_t);
-extern void wanbeiyu_hal_idac_circle_pad_vertical_set(wanbeiyu_hal_idac_mode_t,
-                                                      wanbeiyu_uint8_t);
-extern void wanbeiyu_hal_spst_switch_circle_pad_vertical_set(
-    wanbeiyu_hal_spst_switch_state_t);
-
 #ifdef __cplusplus
 }
 #endif
