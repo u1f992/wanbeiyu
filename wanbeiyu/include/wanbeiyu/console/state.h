@@ -160,15 +160,15 @@ typedef struct wanbeiyu_console_state_t {
   wanbeiyu_bool_t reserved_0;
   wanbeiyu_bool_t reserved_1;
 
-  wanbeiyu_touch_screen_state_t touch_screen_state;
+  wanbeiyu_touch_screen_state_t stash_touch_screen;
   struct {
     wanbeiyu_uint8_t x;
     wanbeiyu_uint8_t y;
-  } c_stick_state;
+  } stach_c_stick;
   struct {
     wanbeiyu_uint8_t x;
     wanbeiyu_uint8_t y;
-  } circle_pad_state;
+  } stash_circle_pad;
 } wanbeiyu_console_state_t;
 
 static WANBEIYU_INLINE void
@@ -198,24 +198,24 @@ wanbeiyu_console_state_deserialize(const wanbeiyu_uint8_t *buffer,
   state->a = (buffer[1] >> 0) & 1;
 
   state->touch_screen =
-      (buffer[2] >> 7) & 1 ? &(state->touch_screen_state) : NULL;
-  state->c_stick.x = (buffer[2] >> 6) & 1 ? &(state->c_stick_state.x) : NULL;
-  state->c_stick.y = (buffer[2] >> 5) & 1 ? &(state->c_stick_state.y) : NULL;
+      (buffer[2] >> 7) & 1 ? &(state->stash_touch_screen) : NULL;
+  state->c_stick.x = (buffer[2] >> 6) & 1 ? &(state->stach_c_stick.x) : NULL;
+  state->c_stick.y = (buffer[2] >> 5) & 1 ? &(state->stach_c_stick.y) : NULL;
   state->circle_pad.x =
-      (buffer[2] >> 4) & 1 ? &(state->circle_pad_state.x) : NULL;
+      (buffer[2] >> 4) & 1 ? &(state->stash_circle_pad.x) : NULL;
   state->circle_pad.y =
-      (buffer[2] >> 3) & 1 ? &(state->circle_pad_state.y) : NULL;
+      (buffer[2] >> 3) & 1 ? &(state->stash_circle_pad.y) : NULL;
   state->reserved_0 = (buffer[2] >> 2) & 1;
   state->reserved_1 = (buffer[2] >> 1) & 1;
 
-  state->touch_screen_state.x = ((buffer[2] & 1) << 8) | buffer[3];
-  state->touch_screen_state.y = buffer[4];
+  state->stash_touch_screen.x = ((buffer[2] & 1) << 8) | buffer[3];
+  state->stash_touch_screen.y = buffer[4];
 
-  state->c_stick_state.x = buffer[5];
-  state->c_stick_state.y = buffer[6];
+  state->stach_c_stick.x = buffer[5];
+  state->stach_c_stick.y = buffer[6];
 
-  state->circle_pad_state.x = buffer[7];
-  state->circle_pad_state.y = buffer[8];
+  state->stash_circle_pad.x = buffer[7];
+  state->stash_circle_pad.y = buffer[8];
 }
 
 static WANBEIYU_INLINE void
@@ -241,14 +241,14 @@ wanbeiyu_console_state_serialize(const wanbeiyu_console_state_t *state,
               ((state->circle_pad.x != NULL ? 1 : 0) << 4) |
               ((state->circle_pad.y != NULL ? 1 : 0) << 3) |
               ((state->reserved_0 & 1) << 2) | ((state->reserved_1 & 1) << 1) |
-              (((state->touch_screen_state.x) >> 8) & 1);
+              (((state->stash_touch_screen.x) >> 8) & 1);
 
-  buffer[3] = state->touch_screen_state.x & 0xFF;
-  buffer[4] = state->touch_screen_state.y;
-  buffer[5] = state->c_stick_state.x;
-  buffer[6] = state->c_stick_state.y;
-  buffer[7] = state->circle_pad_state.x;
-  buffer[8] = state->circle_pad_state.y;
+  buffer[3] = state->stash_touch_screen.x & 0xFF;
+  buffer[4] = state->stash_touch_screen.y;
+  buffer[5] = state->stach_c_stick.x;
+  buffer[6] = state->stach_c_stick.y;
+  buffer[7] = state->stash_circle_pad.x;
+  buffer[8] = state->stash_circle_pad.y;
 }
 
 #ifdef __cplusplus

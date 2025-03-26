@@ -22,8 +22,7 @@
 extern "C" {
 #endif
 
-#include "../hal/idac.h"
-#include "../hal/spst_switch.h"
+#include "../hal.h"
 #include "state.h"
 
 /**
@@ -38,12 +37,15 @@ extern "C" {
  *
  * (Pin numbers of Hirose FH33-4S-1SH(10))
  */
-typedef struct wanbeiyu_console_c_stick_t {
-  wanbeiyu_hal_idac_t *axis1;
-  wanbeiyu_hal_spst_switch_t *axis1_switch;
-  wanbeiyu_hal_idac_t *axis3;
-  wanbeiyu_hal_spst_switch_t *axis3_switch;
-} wanbeiyu_console_c_stick_t;
+
+extern void wanbeiyu_hal_c_stick_positive_slope_set(wanbeiyu_hal_idac_mode_t,
+                                                    wanbeiyu_uint8_t);
+extern void wanbeiyu_hal_c_stick_positive_slope_switch_set(
+    wanbeiyu_hal_spst_switch_state_t);
+extern void wanbeiyu_hal_c_stick_negative_slope_set(wanbeiyu_hal_idac_mode_t,
+                                                    wanbeiyu_uint8_t);
+extern void wanbeiyu_hal_c_stick_negative_slope_switch_set(
+    wanbeiyu_hal_spst_switch_state_t);
 
 static WANBEIYU_INLINE int wanbeiyu_internal_abs(int value) {
   assert(INT_MIN + 1 <= value);
@@ -52,8 +54,7 @@ static WANBEIYU_INLINE int wanbeiyu_internal_abs(int value) {
 }
 
 static WANBEIYU_INLINE void
-wanbeiyu_console_c_stick_hold(wanbeiyu_console_c_stick_t *c_stick,
-                              const wanbeiyu_c_stick_state_t *state) {
+wanbeiyu_console_c_stick_set(const wanbeiyu_c_stick_state_t *state) {
   /*
    * d1 = signed_distance_to(y=x) / DISTANCE_MAX * UINT8_MAX
    * d3 = signed_distance_to(y=-x+255) / DISTANCE_MAX * UINT8_MAX
@@ -72,63 +73,39 @@ wanbeiyu_console_c_stick_hold(wanbeiyu_console_c_stick_t *c_stick,
   int d1 = -x + y;
   int d3 = x + y - 255;
 
-  assert(c_stick != NULL);
   assert(state != NULL);
   assert(-255 <= d1 && d1 <= 255);
   assert(-255 <= d3 && d3 <= 255);
 
   if (d1 > 0) {
-    wanbeiyu_hal_idac_source(c_stick->axis1,
-                             (wanbeiyu_uint8_t)wanbeiyu_internal_abs(d1));
+    wanbeiyu_hal_c_stick_negative_slope_set(
+        WANBEIYU_HAL_IDAC_SOURCE, (wanbeiyu_uint8_t)wanbeiyu_internal_abs(d1));
   } else {
-    wanbeiyu_hal_idac_sink(c_stick->axis1,
-                           (wanbeiyu_uint8_t)wanbeiyu_internal_abs(d1));
+    wanbeiyu_hal_c_stick_negative_slope_set(
+        WANBEIYU_HAL_IDAC_SINK, (wanbeiyu_uint8_t)wanbeiyu_internal_abs(d1));
   }
   if (d1 == 0 && x == y) {
-    wanbeiyu_hal_spst_switch_open(c_stick->axis1_switch);
+    wanbeiyu_hal_c_stick_negative_slope_switch_set(
+        WANBEIYU_HAL_SPST_SWITCH_OPEN);
   } else {
-    wanbeiyu_hal_spst_switch_close(c_stick->axis1_switch);
+    wanbeiyu_hal_c_stick_negative_slope_switch_set(
+        WANBEIYU_HAL_SPST_SWITCH_CLOSE);
   }
 
   if (d3 > 0) {
-    wanbeiyu_hal_idac_source(c_stick->axis3,
-                             (wanbeiyu_uint8_t)wanbeiyu_internal_abs(d3));
+    wanbeiyu_hal_c_stick_positive_slope_set(
+        WANBEIYU_HAL_IDAC_SOURCE, (wanbeiyu_uint8_t)wanbeiyu_internal_abs(d3));
   } else {
-    wanbeiyu_hal_idac_sink(c_stick->axis3,
-                           (wanbeiyu_uint8_t)wanbeiyu_internal_abs(d3));
+    wanbeiyu_hal_c_stick_positive_slope_set(
+        WANBEIYU_HAL_IDAC_SINK, (wanbeiyu_uint8_t)wanbeiyu_internal_abs(d3));
   }
   if (d3 == 0 && 255 - x == y) {
-    wanbeiyu_hal_spst_switch_open(c_stick->axis3_switch);
+    wanbeiyu_hal_c_stick_positive_slope_switch_set(
+        WANBEIYU_HAL_SPST_SWITCH_OPEN);
   } else {
-    wanbeiyu_hal_spst_switch_close(c_stick->axis3_switch);
+    wanbeiyu_hal_c_stick_positive_slope_switch_set(
+        WANBEIYU_HAL_SPST_SWITCH_CLOSE);
   }
-}
-
-static WANBEIYU_INLINE void
-wanbeiyu_console_c_stick_release(wanbeiyu_console_c_stick_t *c_stick) {
-  assert(c_stick != NULL);
-
-  wanbeiyu_hal_spst_switch_open(c_stick->axis1_switch);
-  wanbeiyu_hal_spst_switch_open(c_stick->axis3_switch);
-}
-
-static WANBEIYU_INLINE void wanbeiyu_console_c_stick_init(
-    wanbeiyu_console_c_stick_t *c_stick, wanbeiyu_hal_idac_t *axis1,
-    wanbeiyu_hal_spst_switch_t *axis1_switch, wanbeiyu_hal_idac_t *axis3,
-    wanbeiyu_hal_spst_switch_t *axis3_switch) {
-  assert(c_stick != NULL);
-  assert(axis1 != NULL);
-  assert(axis1_switch != NULL);
-  assert(axis3 != NULL);
-  assert(axis3_switch != NULL);
-
-  c_stick->axis1 = axis1;
-  c_stick->axis1_switch = axis1_switch;
-  c_stick->axis3 = axis3;
-  c_stick->axis3_switch = axis3_switch;
-
-  (void)wanbeiyu_console_c_stick_hold;
-  (void)wanbeiyu_console_c_stick_release;
 }
 
 #ifdef __cplusplus

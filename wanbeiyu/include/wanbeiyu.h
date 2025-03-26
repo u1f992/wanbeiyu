@@ -43,42 +43,41 @@ typedef enum wanbeiyu_state_t {
 } wanbeiyu_state_t;
 
 typedef struct wanbeiyu_t {
-  wanbeiyu_uint8_t buffer[9];
   wanbeiyu_state_t state;
+  wanbeiyu_uint8_t command_buffer[9];
   wanbeiyu_console_state_t console_state;
-  wanbeiyu_console_t console;
-  wanbeiyu_hal_uart_t *uart;
 } wanbeiyu_t;
 
-static WANBEIYU_INLINE void wanbeiyu_init(wanbeiyu_t *wanbeiyu,
-                                          const wanbeiyu_hal_t *hal) {
+static WANBEIYU_INLINE void wanbeiyu_init(wanbeiyu_t *wanbeiyu) {
   assert(wanbeiyu != NULL);
-  assert(hal != NULL);
 
   wanbeiyu->state = WANBEIYU_STATE_INITIAL;
-  wanbeiyu_console_init(&(wanbeiyu->console), hal);
-  wanbeiyu->uart = hal->uart;
 }
 
-static WANBEIYU_INLINE void wanbeiyu_on_data(wanbeiyu_t *wanbeiyu,
-                                             const wanbeiyu_uint8_t *buffer,
-                                             size_t length) {
-  size_t i = 0;
+static WANBEIYU_INLINE void wanbeiyu_loop(wanbeiyu_t *wanbeiyu,
+                                          const wanbeiyu_uint8_t *input,
+                                          size_t length) {
+  size_t i;
 
   assert(wanbeiyu != NULL);
+  assert(input != NULL);
+
+  if (length == 0) {
+    wanbeiyu->state = WANBEIYU_STATE_INITIAL;
+    return;
+  }
 
   for (i = 0; i < length; i++) {
-    wanbeiyu_uint8_t c = buffer[i];
+    wanbeiyu_uint8_t c = input[i];
 
     switch (wanbeiyu->state) {
     case WANBEIYU_STATE_INITIAL:
       if (c == WANBEIYU_COMMAND_GET_CONSOLE_STATE) {
         wanbeiyu_console_state_serialize(&(wanbeiyu->console_state),
-                                         wanbeiyu->buffer);
-        wanbeiyu_hal_uart_write(wanbeiyu->uart, wanbeiyu->buffer,
-                                sizeof(wanbeiyu->buffer));
+                                         wanbeiyu->command_buffer);
+        wanbeiyu_hal_uart_write(wanbeiyu->command_buffer, sizeof(wanbeiyu->command_buffer));
       }
-      if (c != WANBEIYU_COMMAND_SET_CONSOLE_STATE) {
+      if (c == WANBEIYU_COMMAND_SET_CONSOLE_STATE) {
         wanbeiyu->state++;
       }
       break;
@@ -97,15 +96,14 @@ static WANBEIYU_INLINE void wanbeiyu_on_data(wanbeiyu_t *wanbeiyu,
     case WANBEIYU_STATE_6:
       /* FALLTHROUGH */
     case WANBEIYU_STATE_7:
-      wanbeiyu->buffer[(wanbeiyu->state++ - 1)] = c;
+      wanbeiyu->command_buffer[(wanbeiyu->state++ - 1)] = c;
       break;
     case WANBEIYU_STATE_8:
-      wanbeiyu->buffer[wanbeiyu->state - 1] = c;
-      wanbeiyu_console_state_deserialize(wanbeiyu->buffer,
+      wanbeiyu->command_buffer[wanbeiyu->state - 1] = c;
+      wanbeiyu_console_state_deserialize(wanbeiyu->command_buffer,
                                          &(wanbeiyu->console_state));
-      wanbeiyu_console_set(&(wanbeiyu->console), &(wanbeiyu->console_state));
+      wanbeiyu_console_set(&(wanbeiyu->console_state));
       /* FALLTHROUGH */
-
     default:
       wanbeiyu->state = WANBEIYU_STATE_INITIAL;
       break;

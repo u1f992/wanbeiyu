@@ -22,9 +22,7 @@
 extern "C" {
 #endif
 
-#include "../hal/rdac_240_steps.h"
-#include "../hal/rdac_320_steps.h"
-#include "../hal/spst_switch.h"
+#include "../hal.h"
 #include "state.h"
 
 /**
@@ -40,42 +38,21 @@ extern "C" {
  * 1: Y_{A}; 2: X_{B}; 3: Y_{B}; 4: X_{A}
  * (Pin numbers of Molex 5014610491)
  */
-typedef struct wanbeiyu_console_touch_screen_t {
-  wanbeiyu_hal_rdac_320_steps_t *horizontal;
-  wanbeiyu_hal_rdac_240_steps_t *vertical;
-  wanbeiyu_hal_spst_switch_t *switch_;
-} wanbeiyu_console_touch_screen_t;
 
-static WANBEIYU_INLINE void wanbeiyu_console_touch_screen_init(
-    wanbeiyu_console_touch_screen_t *touch_screen,
-    wanbeiyu_hal_rdac_320_steps_t *horizontal,
-    wanbeiyu_hal_rdac_240_steps_t *vertical,
-    wanbeiyu_hal_spst_switch_t *switch_) {
-  assert(touch_screen != NULL);
-  assert(horizontal != NULL);
-  assert(vertical != NULL);
-  assert(switch_ != NULL);
+extern void wanbeiyu_hal_touch_screen_horizontal_set(wanbeiyu_uint16_t);
+extern void wanbeiyu_hal_touch_screen_vertical_set(wanbeiyu_uint8_t);
+extern void
+    wanbeiyu_hal_touch_screen_switch_set(wanbeiyu_hal_spst_switch_state_t);
 
-  touch_screen->horizontal = horizontal;
-  touch_screen->vertical = vertical;
-  touch_screen->switch_ = switch_;
-}
-
-#define wanbeiyu_console_touch_screen_release(touch_screen)                    \
-  /* assert((touch_screen) != NULL); */                                        \
-  wanbeiyu_hal_spst_switch_open((touch_screen)->switch_)
-
-static WANBEIYU_INLINE void wanbeiyu_console_touch_screen_hold(
-    wanbeiyu_console_touch_screen_t *touch_screen,
-    const wanbeiyu_touch_screen_state_t *state) {
-  assert(touch_screen != NULL);
-  assert(state != NULL);
-
-  wanbeiyu_hal_rdac_320_steps_set_wiper_position(
-      touch_screen->horizontal, state->x < 320 ? state->x : 319);
-  wanbeiyu_hal_rdac_240_steps_set_wiper_position(
-      touch_screen->vertical, state->y < 240 ? state->y : 239);
-  wanbeiyu_hal_spst_switch_close(touch_screen->switch_);
+static WANBEIYU_INLINE void
+wanbeiyu_console_touch_screen_set(const wanbeiyu_touch_screen_state_t *state) {
+  if (state == NULL) {
+    wanbeiyu_hal_touch_screen_switch_set(WANBEIYU_HAL_SPST_SWITCH_OPEN);
+  } else {
+    wanbeiyu_hal_touch_screen_horizontal_set(state->x < 320 ? state->x : 319);
+    wanbeiyu_hal_touch_screen_vertical_set(state->y < 240 ? state->y : 239);
+    wanbeiyu_hal_touch_screen_switch_set(WANBEIYU_HAL_SPST_SWITCH_CLOSE);
+  }
 }
 
 #ifdef __cplusplus

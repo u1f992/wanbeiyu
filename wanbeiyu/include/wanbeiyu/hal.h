@@ -22,54 +22,18 @@
 extern "C" {
 #endif
 
-#include "hal/idac.h"
-#include "hal/rdac_240_steps.h"
-#include "hal/rdac_320_steps.h"
-#include "hal/spst_switch.h"
-#include "hal/uart.h"
+/* extern void wanbeiyu_hal_uart_read(wanbeiyu_uint8_t *, size_t *); */
+extern void wanbeiyu_hal_uart_write(const wanbeiyu_uint8_t *, size_t);
 
-typedef struct wanbeiyu_hal_touch_screen_t {
-  const wanbeiyu_hal_rdac_320_steps_t *horizontal;
-  const wanbeiyu_hal_rdac_240_steps_t *vertical;
-  const wanbeiyu_hal_spst_switch_t *switch_;
-} wanbeiyu_hal_touch_screen_t;
+typedef enum wanbeiyu_hal_idac_mode_t {
+  WANBEIYU_HAL_IDAC_SINK,
+  WANBEIYU_HAL_IDAC_SOURCE
+} wanbeiyu_hal_idac_mode_t;
 
-typedef struct wanbeiyu_hal_c_stick_t {
-  const wanbeiyu_hal_idac_t *axis1;
-  const wanbeiyu_hal_spst_switch_t *axis1_switch;
-  const wanbeiyu_hal_idac_t *axis3;
-  const wanbeiyu_hal_spst_switch_t *axis3_switch;
-} wanbeiyu_hal_c_stick_t;
-
-typedef struct wanbeiyu_hal_circle_pad_t {
-  const wanbeiyu_hal_idac_t *horizontal;
-  const wanbeiyu_hal_spst_switch_t *horizontal_switch;
-  const wanbeiyu_hal_idac_t *vertical;
-  const wanbeiyu_hal_spst_switch_t *vertical_switch;
-} wanbeiyu_hal_circle_pad_t;
-
-typedef struct wanbeiyu_hal_t {
-  const wanbeiyu_hal_uart_t *uart;
-  const wanbeiyu_hal_spst_switch_t *power;
-  const wanbeiyu_hal_spst_switch_t *home;
-  const wanbeiyu_hal_spst_switch_t *zr;
-  const wanbeiyu_hal_spst_switch_t *zl;
-  const wanbeiyu_hal_spst_switch_t *y;
-  const wanbeiyu_hal_spst_switch_t *x;
-  const wanbeiyu_hal_spst_switch_t *l;
-  const wanbeiyu_hal_spst_switch_t *r;
-  const wanbeiyu_hal_spst_switch_t *down;
-  const wanbeiyu_hal_spst_switch_t *up;
-  const wanbeiyu_hal_spst_switch_t *left;
-  const wanbeiyu_hal_spst_switch_t *right;
-  const wanbeiyu_hal_spst_switch_t *start;
-  const wanbeiyu_hal_spst_switch_t *select;
-  const wanbeiyu_hal_spst_switch_t *b;
-  const wanbeiyu_hal_spst_switch_t *a;
-  const wanbeiyu_hal_touch_screen_t touch_screen;
-  const wanbeiyu_hal_c_stick_t c_stick;
-  const wanbeiyu_hal_circle_pad_t circle_pad;
-} wanbeiyu_hal_t;
+typedef enum wanbeiyu_hal_spst_switch_state_t {
+  WANBEIYU_HAL_SPST_SWITCH_OPEN,
+  WANBEIYU_HAL_SPST_SWITCH_CLOSE
+} wanbeiyu_hal_spst_switch_state_t;
 
 #ifdef __cplusplus
 }

@@ -22,7 +22,7 @@
 extern "C" {
 #endif
 
-#include "../hal/spst_switch.h"
+#include "../hal.h"
 #include "state.h"
 
 /**
@@ -36,26 +36,44 @@ extern "C" {
  *               |
  *               v GND
  */
-typedef struct wanbeiyu_console_button_t {
-  wanbeiyu_hal_spst_switch_t *switch_;
-} wanbeiyu_console_button_t;
+
+extern void wanbeiyu_hal_buttons_power_set(wanbeiyu_hal_spst_switch_state_t);
+extern void wanbeiyu_hal_buttons_home_set(wanbeiyu_hal_spst_switch_state_t);
+extern void wanbeiyu_hal_buttons_zr_set(wanbeiyu_hal_spst_switch_state_t);
+extern void wanbeiyu_hal_buttons_zl_set(wanbeiyu_hal_spst_switch_state_t);
+extern void wanbeiyu_hal_buttons_y_set(wanbeiyu_hal_spst_switch_state_t);
+extern void wanbeiyu_hal_buttons_x_set(wanbeiyu_hal_spst_switch_state_t);
+extern void wanbeiyu_hal_buttons_l_set(wanbeiyu_hal_spst_switch_state_t);
+extern void wanbeiyu_hal_buttons_r_set(wanbeiyu_hal_spst_switch_state_t);
+extern void wanbeiyu_hal_buttons_down_set(wanbeiyu_hal_spst_switch_state_t);
+extern void wanbeiyu_hal_buttons_up_set(wanbeiyu_hal_spst_switch_state_t);
+extern void wanbeiyu_hal_buttons_left_set(wanbeiyu_hal_spst_switch_state_t);
+extern void wanbeiyu_hal_buttons_right_set(wanbeiyu_hal_spst_switch_state_t);
+extern void wanbeiyu_hal_buttons_start_set(wanbeiyu_hal_spst_switch_state_t);
+extern void wanbeiyu_hal_buttons_select_set(wanbeiyu_hal_spst_switch_state_t);
+extern void wanbeiyu_hal_buttons_b_set(wanbeiyu_hal_spst_switch_state_t);
+extern void wanbeiyu_hal_buttons_a_set(wanbeiyu_hal_spst_switch_state_t);
+
+static void (*const wanbeiyu_internal_buttons_map[16])(
+    wanbeiyu_hal_spst_switch_state_t) = {
+    wanbeiyu_hal_buttons_a_set,      wanbeiyu_hal_buttons_b_set,
+    wanbeiyu_hal_buttons_select_set, wanbeiyu_hal_buttons_start_set,
+    wanbeiyu_hal_buttons_right_set,  wanbeiyu_hal_buttons_left_set,
+    wanbeiyu_hal_buttons_up_set,     wanbeiyu_hal_buttons_down_set,
+    wanbeiyu_hal_buttons_r_set,      wanbeiyu_hal_buttons_l_set,
+    wanbeiyu_hal_buttons_x_set,      wanbeiyu_hal_buttons_y_set,
+    wanbeiyu_hal_buttons_zl_set,     wanbeiyu_hal_buttons_zr_set,
+    wanbeiyu_hal_buttons_home_set,   wanbeiyu_hal_buttons_power_set};
 
 static WANBEIYU_INLINE void
-wanbeiyu_console_button_init(wanbeiyu_console_button_t *button,
-                             wanbeiyu_hal_spst_switch_t *switch_) {
-  assert(button != NULL);
-  assert(switch_ != NULL);
-
-  button->switch_ = switch_;
+wanbeiyu_console_buttons_set(wanbeiyu_uint16_t states) {
+  size_t i;
+  for (i = 0; i < 16; ++i) {
+    wanbeiyu_internal_buttons_map[i]((states & (1 << i))
+                                         ? WANBEIYU_HAL_SPST_SWITCH_CLOSE
+                                         : WANBEIYU_HAL_SPST_SWITCH_OPEN);
+  }
 }
-
-#define wanbeiyu_console_button_hold(button)                                   \
-  /* assert((button) != NULL); */                                              \
-  wanbeiyu_hal_spst_switch_close((button)->switch_)
-
-#define wanbeiyu_console_button_release(button)                                \
-  /* assert((button) != NULL); */                                              \
-  wanbeiyu_hal_spst_switch_open((button)->switch_)
 
 #ifdef __cplusplus
 }

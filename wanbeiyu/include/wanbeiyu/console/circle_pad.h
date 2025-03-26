@@ -22,8 +22,7 @@
 extern "C" {
 #endif
 
-#include "../hal/idac.h"
-#include "../hal/spst_switch.h"
+#include "../hal.h"
 #include "state.h"
 
 /**
@@ -52,12 +51,15 @@ extern "C" {
  * 1: GND; 2: X; 3: 1v8; 4: Y
  * (Pin numbers of Molex 5014610491)
  */
-typedef struct wanbeiyu_console_circle_pad_t {
-  wanbeiyu_hal_idac_t *horizontal;
-  wanbeiyu_hal_spst_switch_t *horizontal_switch;
-  wanbeiyu_hal_idac_t *vertical;
-  wanbeiyu_hal_spst_switch_t *vertical_switch;
-} wanbeiyu_console_circle_pad_t;
+
+extern void wanbeiyu_hal_circle_pad_horizontal_set(wanbeiyu_hal_idac_mode_t,
+                                                   wanbeiyu_uint8_t);
+extern void wanbeiyu_hal_circle_pad_horizontal_switch_set(
+    wanbeiyu_hal_spst_switch_state_t);
+extern void wanbeiyu_hal_circle_pad_vertical_set(wanbeiyu_hal_idac_mode_t,
+                                                 wanbeiyu_uint8_t);
+extern void wanbeiyu_hal_circle_pad_vertical_switch_set(
+    wanbeiyu_hal_spst_switch_state_t);
 
 static WANBEIYU_INLINE wanbeiyu_uint8_t
 wanbeiyu_internal_map_127_to_255(wanbeiyu_uint8_t value) {
@@ -67,69 +69,40 @@ wanbeiyu_internal_map_127_to_255(wanbeiyu_uint8_t value) {
 }
 
 static WANBEIYU_INLINE void
-wanbeiyu_console_circle_pad_hold(wanbeiyu_console_circle_pad_t *circle_pad,
-                                 const wanbeiyu_circle_pad_state_t *state) {
-  assert(circle_pad != NULL);
+wanbeiyu_console_circle_pad_set(const wanbeiyu_circle_pad_state_t *state) {
   assert(state != NULL);
 
   if (state->x != NULL) {
     if (*(state->x) < 128) {
-      wanbeiyu_hal_idac_source(
-          circle_pad->horizontal,
+      wanbeiyu_hal_circle_pad_horizontal_set(
+          WANBEIYU_HAL_IDAC_SOURCE,
           wanbeiyu_internal_map_127_to_255(127 - *(state->x)));
     } else {
-      wanbeiyu_hal_idac_sink(
-          circle_pad->horizontal,
+      wanbeiyu_hal_circle_pad_horizontal_set(
+          WANBEIYU_HAL_IDAC_SINK,
           wanbeiyu_internal_map_127_to_255(*(state->x) - 128));
     }
-    wanbeiyu_hal_spst_switch_close(circle_pad->horizontal_switch);
+    wanbeiyu_hal_circle_pad_horizontal_switch_set(
+        WANBEIYU_HAL_SPST_SWITCH_CLOSE);
   } else {
-    wanbeiyu_hal_spst_switch_open(circle_pad->horizontal_switch);
+    wanbeiyu_hal_circle_pad_horizontal_switch_set(
+        WANBEIYU_HAL_SPST_SWITCH_OPEN);
   }
 
   if (state->y != NULL) {
     if (*(state->y) < 128) {
-      wanbeiyu_hal_idac_sink(
-          circle_pad->vertical,
+      wanbeiyu_hal_circle_pad_vertical_set(
+          WANBEIYU_HAL_IDAC_SINK,
           wanbeiyu_internal_map_127_to_255(127 - *(state->y)));
     } else {
-      wanbeiyu_hal_idac_source(
-          circle_pad->vertical,
+      wanbeiyu_hal_circle_pad_vertical_set(
+          WANBEIYU_HAL_IDAC_SOURCE,
           wanbeiyu_internal_map_127_to_255(*(state->y) - 128));
     }
-    wanbeiyu_hal_spst_switch_close(circle_pad->vertical_switch);
+    wanbeiyu_hal_circle_pad_vertical_switch_set(WANBEIYU_HAL_SPST_SWITCH_CLOSE);
   } else {
-    wanbeiyu_hal_spst_switch_open(circle_pad->vertical_switch);
+    wanbeiyu_hal_circle_pad_vertical_switch_set(WANBEIYU_HAL_SPST_SWITCH_OPEN);
   }
-}
-
-static WANBEIYU_INLINE void
-wanbeiyu_console_circle_pad_release(wanbeiyu_console_circle_pad_t *circle_pad) {
-  assert(circle_pad != NULL);
-
-  wanbeiyu_hal_spst_switch_open(circle_pad->horizontal_switch);
-  wanbeiyu_hal_spst_switch_open(circle_pad->vertical_switch);
-}
-
-static WANBEIYU_INLINE void
-wanbeiyu_console_circle_pad_init(wanbeiyu_console_circle_pad_t *circle_pad,
-                                 wanbeiyu_hal_idac_t *horizontal,
-                                 wanbeiyu_hal_spst_switch_t *horizontal_switch,
-                                 wanbeiyu_hal_idac_t *vertical,
-                                 wanbeiyu_hal_spst_switch_t *vertical_switch) {
-  assert(circle_pad != NULL);
-  assert(horizontal != NULL);
-  assert(horizontal_switch != NULL);
-  assert(vertical != NULL);
-  assert(vertical_switch != NULL);
-
-  circle_pad->horizontal = horizontal;
-  circle_pad->horizontal_switch = horizontal_switch;
-  circle_pad->vertical = vertical;
-  circle_pad->vertical_switch = vertical_switch;
-
-  (void)wanbeiyu_console_circle_pad_hold;
-  (void)wanbeiyu_console_circle_pad_release;
 }
 
 #ifdef __cplusplus
