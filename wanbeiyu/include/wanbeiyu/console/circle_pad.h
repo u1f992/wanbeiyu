@@ -51,16 +51,6 @@ extern "C" {
  * 1: GND; 2: X; 3: 1v8; 4: Y
  * (Pin numbers of Molex 5014610491)
  */
-
-extern void wanbeiyu_hal_circle_pad_horizontal_set(wanbeiyu_hal_idac_mode_t,
-                                                   wanbeiyu_uint8_t);
-extern void wanbeiyu_hal_circle_pad_horizontal_switch_set(
-    wanbeiyu_hal_spst_switch_state_t);
-extern void wanbeiyu_hal_circle_pad_vertical_set(wanbeiyu_hal_idac_mode_t,
-                                                 wanbeiyu_uint8_t);
-extern void wanbeiyu_hal_circle_pad_vertical_switch_set(
-    wanbeiyu_hal_spst_switch_state_t);
-
 static WANBEIYU_INLINE wanbeiyu_uint8_t
 wanbeiyu_internal_map_127_to_255(wanbeiyu_uint8_t value) {
   assert(value <= 127);
@@ -74,34 +64,36 @@ wanbeiyu_console_circle_pad_set(const wanbeiyu_circle_pad_state_t *state) {
 
   if (state->x != NULL) {
     if (*(state->x) < 128) {
-      wanbeiyu_hal_circle_pad_horizontal_set(
+      wanbeiyu_hal_idac_circle_pad_horizontal_set(
           WANBEIYU_HAL_IDAC_SOURCE,
           wanbeiyu_internal_map_127_to_255(127 - *(state->x)));
     } else {
-      wanbeiyu_hal_circle_pad_horizontal_set(
+      wanbeiyu_hal_idac_circle_pad_horizontal_set(
           WANBEIYU_HAL_IDAC_SINK,
           wanbeiyu_internal_map_127_to_255(*(state->x) - 128));
     }
-    wanbeiyu_hal_circle_pad_horizontal_switch_set(
+    wanbeiyu_hal_spst_switch_circle_pad_horizontal_set(
         WANBEIYU_HAL_SPST_SWITCH_CLOSE);
   } else {
-    wanbeiyu_hal_circle_pad_horizontal_switch_set(
+    wanbeiyu_hal_spst_switch_circle_pad_horizontal_set(
         WANBEIYU_HAL_SPST_SWITCH_OPEN);
   }
 
   if (state->y != NULL) {
     if (*(state->y) < 128) {
-      wanbeiyu_hal_circle_pad_vertical_set(
+      wanbeiyu_hal_idac_circle_pad_vertical_set(
           WANBEIYU_HAL_IDAC_SINK,
           wanbeiyu_internal_map_127_to_255(127 - *(state->y)));
     } else {
-      wanbeiyu_hal_circle_pad_vertical_set(
+      wanbeiyu_hal_idac_circle_pad_vertical_set(
           WANBEIYU_HAL_IDAC_SOURCE,
           wanbeiyu_internal_map_127_to_255(*(state->y) - 128));
     }
-    wanbeiyu_hal_circle_pad_vertical_switch_set(WANBEIYU_HAL_SPST_SWITCH_CLOSE);
+    wanbeiyu_hal_spst_switch_circle_pad_vertical_set(
+        WANBEIYU_HAL_SPST_SWITCH_CLOSE);
   } else {
-    wanbeiyu_hal_circle_pad_vertical_switch_set(WANBEIYU_HAL_SPST_SWITCH_OPEN);
+    wanbeiyu_hal_spst_switch_circle_pad_vertical_set(
+        WANBEIYU_HAL_SPST_SWITCH_OPEN);
   }
 }
 

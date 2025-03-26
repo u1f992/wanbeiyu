@@ -28,102 +28,118 @@ void wanbeiyu_hal_uart_write(const wanbeiyu_uint8_t *buffer, size_t length) {
   fprintf(stderr, "\n");
 }
 
-void wanbeiyu_hal_buttons_power_set(wanbeiyu_hal_spst_switch_state_t state) {
+void wanbeiyu_hal_spst_switch_buttons_power_set(
+    wanbeiyu_hal_spst_switch_state_t state) {
   (void)state;
 }
-void wanbeiyu_hal_buttons_home_set(wanbeiyu_hal_spst_switch_state_t state) {
+void wanbeiyu_hal_spst_switch_buttons_home_set(
+    wanbeiyu_hal_spst_switch_state_t state) {
   (void)state;
 }
-void wanbeiyu_hal_buttons_zr_set(wanbeiyu_hal_spst_switch_state_t state) {
+void wanbeiyu_hal_spst_switch_buttons_zr_set(
+    wanbeiyu_hal_spst_switch_state_t state) {
   (void)state;
 }
-void wanbeiyu_hal_buttons_zl_set(wanbeiyu_hal_spst_switch_state_t state) {
+void wanbeiyu_hal_spst_switch_buttons_zl_set(
+    wanbeiyu_hal_spst_switch_state_t state) {
   (void)state;
 }
-void wanbeiyu_hal_buttons_y_set(wanbeiyu_hal_spst_switch_state_t state) {
+void wanbeiyu_hal_spst_switch_buttons_y_set(
+    wanbeiyu_hal_spst_switch_state_t state) {
   (void)state;
 }
-void wanbeiyu_hal_buttons_x_set(wanbeiyu_hal_spst_switch_state_t state) {
+void wanbeiyu_hal_spst_switch_buttons_x_set(
+    wanbeiyu_hal_spst_switch_state_t state) {
   (void)state;
 }
-void wanbeiyu_hal_buttons_l_set(wanbeiyu_hal_spst_switch_state_t state) {
+void wanbeiyu_hal_spst_switch_buttons_l_set(
+    wanbeiyu_hal_spst_switch_state_t state) {
   (void)state;
 }
-void wanbeiyu_hal_buttons_r_set(wanbeiyu_hal_spst_switch_state_t state) {
+void wanbeiyu_hal_spst_switch_buttons_r_set(
+    wanbeiyu_hal_spst_switch_state_t state) {
   (void)state;
 }
-void wanbeiyu_hal_buttons_down_set(wanbeiyu_hal_spst_switch_state_t state) {
+void wanbeiyu_hal_spst_switch_buttons_down_set(
+    wanbeiyu_hal_spst_switch_state_t state) {
   (void)state;
 }
-void wanbeiyu_hal_buttons_up_set(wanbeiyu_hal_spst_switch_state_t state) {
+void wanbeiyu_hal_spst_switch_buttons_up_set(
+    wanbeiyu_hal_spst_switch_state_t state) {
   (void)state;
 }
-void wanbeiyu_hal_buttons_left_set(wanbeiyu_hal_spst_switch_state_t state) {
+void wanbeiyu_hal_spst_switch_buttons_left_set(
+    wanbeiyu_hal_spst_switch_state_t state) {
   (void)state;
 }
-void wanbeiyu_hal_buttons_right_set(wanbeiyu_hal_spst_switch_state_t state) {
+void wanbeiyu_hal_spst_switch_buttons_right_set(
+    wanbeiyu_hal_spst_switch_state_t state) {
   (void)state;
 }
-void wanbeiyu_hal_buttons_start_set(wanbeiyu_hal_spst_switch_state_t state) {
+void wanbeiyu_hal_spst_switch_buttons_start_set(
+    wanbeiyu_hal_spst_switch_state_t state) {
   (void)state;
 }
-void wanbeiyu_hal_buttons_select_set(wanbeiyu_hal_spst_switch_state_t state) {
+void wanbeiyu_hal_spst_switch_buttons_select_set(
+    wanbeiyu_hal_spst_switch_state_t state) {
   (void)state;
 }
-void wanbeiyu_hal_buttons_b_set(wanbeiyu_hal_spst_switch_state_t state) {
+void wanbeiyu_hal_spst_switch_buttons_b_set(
+    wanbeiyu_hal_spst_switch_state_t state) {
   (void)state;
 }
-void wanbeiyu_hal_buttons_a_set(wanbeiyu_hal_spst_switch_state_t state) {
+void wanbeiyu_hal_spst_switch_buttons_a_set(
+    wanbeiyu_hal_spst_switch_state_t state) {
   (void)state;
 }
 
-void wanbeiyu_hal_touch_screen_horizontal_set(wanbeiyu_uint16_t position) {
+void wanbeiyu_hal_rdac_touch_screen_horizontal_set(wanbeiyu_uint16_t position) {
   assert(position < 320);
   (void)position;
 }
-void wanbeiyu_hal_touch_screen_vertical_set(wanbeiyu_uint8_t position) {
+void wanbeiyu_hal_rdac_touch_screen_vertical_set(wanbeiyu_uint8_t position) {
   assert(position < 240);
   (void)position;
 }
-void wanbeiyu_hal_touch_screen_switch_set(
+void wanbeiyu_hal_spst_switch_touch_screen_set(
     wanbeiyu_hal_spst_switch_state_t state) {
   (void)state;
 }
 
-void wanbeiyu_hal_c_stick_positive_slope_set(wanbeiyu_hal_idac_mode_t mode,
-                                             wanbeiyu_uint8_t value) {
+void wanbeiyu_hal_idac_c_stick_positive_slope_set(wanbeiyu_hal_idac_mode_t mode,
+                                                  wanbeiyu_uint8_t value) {
   (void)mode;
   (void)value;
 }
-void wanbeiyu_hal_c_stick_positive_slope_switch_set(
+void wanbeiyu_hal_spst_switch_c_stick_positive_slope_switch_set(
     wanbeiyu_hal_spst_switch_state_t state) {
   (void)state;
 }
-void wanbeiyu_hal_c_stick_negative_slope_set(wanbeiyu_hal_idac_mode_t mode,
-                                             wanbeiyu_uint8_t value) {
+void wanbeiyu_hal_idac_c_stick_negative_slope_set(wanbeiyu_hal_idac_mode_t mode,
+                                                  wanbeiyu_uint8_t value) {
   (void)mode;
   (void)value;
 }
-void wanbeiyu_hal_c_stick_negative_slope_switch_set(
+void wanbeiyu_hal_spst_switch_c_stick_negative_slope_switch_set(
     wanbeiyu_hal_spst_switch_state_t state) {
   (void)state;
 }
 
-void wanbeiyu_hal_circle_pad_horizontal_set(wanbeiyu_hal_idac_mode_t mode,
-                                            wanbeiyu_uint8_t value) {
+void wanbeiyu_hal_idac_circle_pad_horizontal_set(wanbeiyu_hal_idac_mode_t mode,
+                                                 wanbeiyu_uint8_t value) {
   (void)mode;
   (void)value;
 }
-void wanbeiyu_hal_circle_pad_horizontal_switch_set(
+void wanbeiyu_hal_spst_switch_circle_pad_horizontal_set(
     wanbeiyu_hal_spst_switch_state_t state) {
   (void)state;
 }
-void wanbeiyu_hal_circle_pad_vertical_set(wanbeiyu_hal_idac_mode_t mode,
-                                          wanbeiyu_uint8_t value) {
+void wanbeiyu_hal_idac_circle_pad_vertical_set(wanbeiyu_hal_idac_mode_t mode,
+                                               wanbeiyu_uint8_t value) {
   (void)mode;
   (void)value;
 }
-void wanbeiyu_hal_circle_pad_vertical_switch_set(
+void wanbeiyu_hal_spst_switch_circle_pad_vertical_set(
     wanbeiyu_hal_spst_switch_state_t state) {
   (void)state;
 }
@@ -131,7 +147,8 @@ void wanbeiyu_hal_circle_pad_vertical_switch_set(
 int main(void) {
   wanbeiyu_t wanbeiyu;
 
-  wanbeiyu_uint8_t input[10] = {WANBEIYU_COMMAND_GET_CONSOLE_STATE};
+  wanbeiyu_uint8_t input[10] = {
+      WANBEIYU_COMMAND_SET_CONSOLE_STATE, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
   wanbeiyu_init(&wanbeiyu);
 

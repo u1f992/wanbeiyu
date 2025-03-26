@@ -36,43 +36,24 @@ extern "C" {
  *               |
  *               v GND
  */
-
-extern void wanbeiyu_hal_buttons_power_set(wanbeiyu_hal_spst_switch_state_t);
-extern void wanbeiyu_hal_buttons_home_set(wanbeiyu_hal_spst_switch_state_t);
-extern void wanbeiyu_hal_buttons_zr_set(wanbeiyu_hal_spst_switch_state_t);
-extern void wanbeiyu_hal_buttons_zl_set(wanbeiyu_hal_spst_switch_state_t);
-extern void wanbeiyu_hal_buttons_y_set(wanbeiyu_hal_spst_switch_state_t);
-extern void wanbeiyu_hal_buttons_x_set(wanbeiyu_hal_spst_switch_state_t);
-extern void wanbeiyu_hal_buttons_l_set(wanbeiyu_hal_spst_switch_state_t);
-extern void wanbeiyu_hal_buttons_r_set(wanbeiyu_hal_spst_switch_state_t);
-extern void wanbeiyu_hal_buttons_down_set(wanbeiyu_hal_spst_switch_state_t);
-extern void wanbeiyu_hal_buttons_up_set(wanbeiyu_hal_spst_switch_state_t);
-extern void wanbeiyu_hal_buttons_left_set(wanbeiyu_hal_spst_switch_state_t);
-extern void wanbeiyu_hal_buttons_right_set(wanbeiyu_hal_spst_switch_state_t);
-extern void wanbeiyu_hal_buttons_start_set(wanbeiyu_hal_spst_switch_state_t);
-extern void wanbeiyu_hal_buttons_select_set(wanbeiyu_hal_spst_switch_state_t);
-extern void wanbeiyu_hal_buttons_b_set(wanbeiyu_hal_spst_switch_state_t);
-extern void wanbeiyu_hal_buttons_a_set(wanbeiyu_hal_spst_switch_state_t);
-
-static void (*const wanbeiyu_internal_buttons_map[16])(
-    wanbeiyu_hal_spst_switch_state_t) = {
-    wanbeiyu_hal_buttons_a_set,      wanbeiyu_hal_buttons_b_set,
-    wanbeiyu_hal_buttons_select_set, wanbeiyu_hal_buttons_start_set,
-    wanbeiyu_hal_buttons_right_set,  wanbeiyu_hal_buttons_left_set,
-    wanbeiyu_hal_buttons_up_set,     wanbeiyu_hal_buttons_down_set,
-    wanbeiyu_hal_buttons_r_set,      wanbeiyu_hal_buttons_l_set,
-    wanbeiyu_hal_buttons_x_set,      wanbeiyu_hal_buttons_y_set,
-    wanbeiyu_hal_buttons_zl_set,     wanbeiyu_hal_buttons_zr_set,
-    wanbeiyu_hal_buttons_home_set,   wanbeiyu_hal_buttons_power_set};
-
 static WANBEIYU_INLINE void
 wanbeiyu_console_buttons_set(wanbeiyu_uint16_t states) {
-  size_t i;
-  for (i = 0; i < 16; ++i) {
-    wanbeiyu_internal_buttons_map[i]((states & (1 << i))
-                                         ? WANBEIYU_HAL_SPST_SWITCH_CLOSE
-                                         : WANBEIYU_HAL_SPST_SWITCH_OPEN);
-  }
+  wanbeiyu_hal_spst_switch_buttons_power_set((states >> 15) & 1);
+  wanbeiyu_hal_spst_switch_buttons_home_set((states >> 14) & 1);
+  wanbeiyu_hal_spst_switch_buttons_zr_set((states >> 13) & 1);
+  wanbeiyu_hal_spst_switch_buttons_zl_set((states >> 12) & 1);
+  wanbeiyu_hal_spst_switch_buttons_y_set((states >> 11) & 1);
+  wanbeiyu_hal_spst_switch_buttons_x_set((states >> 10) & 1);
+  wanbeiyu_hal_spst_switch_buttons_l_set((states >> 9) & 1);
+  wanbeiyu_hal_spst_switch_buttons_r_set((states >> 8) & 1);
+  wanbeiyu_hal_spst_switch_buttons_down_set((states >> 7) & 1);
+  wanbeiyu_hal_spst_switch_buttons_up_set((states >> 6) & 1);
+  wanbeiyu_hal_spst_switch_buttons_left_set((states >> 5) & 1);
+  wanbeiyu_hal_spst_switch_buttons_right_set((states >> 4) & 1);
+  wanbeiyu_hal_spst_switch_buttons_start_set((states >> 3) & 1);
+  wanbeiyu_hal_spst_switch_buttons_select_set((states >> 2) & 1);
+  wanbeiyu_hal_spst_switch_buttons_b_set((states >> 1) & 1);
+  wanbeiyu_hal_spst_switch_buttons_a_set((states >> 0) & 1);
 }
 
 #ifdef __cplusplus
