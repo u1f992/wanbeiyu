@@ -22,9 +22,6 @@
 extern "C" {
 #endif
 
-/* extern void wanbeiyu_hal_uart_read(wanbeiyu_uint8_t *, size_t *); */
-extern void wanbeiyu_hal_uart_write(const wanbeiyu_uint8_t *, size_t);
-
 typedef enum wanbeiyu_hal_spst_switch_state_t {
   WANBEIYU_HAL_SPST_SWITCH_OPEN,
   WANBEIYU_HAL_SPST_SWITCH_CLOSE

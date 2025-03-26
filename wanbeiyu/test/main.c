@@ -20,6 +20,29 @@
 
 #include <stdio.h>
 
+void wanbeiyu_hal_uart_read(wanbeiyu_uint8_t *buffer, size_t *length) {
+  static const wanbeiyu_uint8_t input[] = {
+      WANBEIYU_COMMAND_SET_STATE, 0xaa, 0x55, 0xf8, 1, 2, 3, 4, 5, 6,
+      WANBEIYU_COMMAND_GET_STATE};
+  static wanbeiyu_uint8_t sent = 0;
+
+  assert(buffer != NULL);
+  assert(length != NULL);
+
+  if (!sent) {
+    size_t i;
+    for (i = 0; i < sizeof(input); i++) {
+      buffer[i] = input[i];
+    }
+    *length = sizeof(input);
+    sent = 1;
+  } else {
+    *length = 0;
+  }
+
+  assert(*length <= WANBEIYU_BUFFER_SIZE);
+}
+
 void wanbeiyu_hal_uart_write(const wanbeiyu_uint8_t *buffer, size_t length) {
   size_t i;
   for (i = 0; i < length; i++) {
@@ -172,12 +195,8 @@ void wanbeiyu_hal_spst_switch_circle_pad_vertical_set(
 int main(void) {
   wanbeiyu_t wanbeiyu;
 
-  wanbeiyu_uint8_t input[] = {
-      WANBEIYU_COMMAND_SET_CONSOLE_STATE, 0xaa, 0x55, 0xf8, 1, 2, 3, 4, 5, 6,
-      WANBEIYU_COMMAND_GET_CONSOLE_STATE};
-
   wanbeiyu_init(&wanbeiyu);
-  wanbeiyu_loop(&wanbeiyu, input, sizeof(input));
+  wanbeiyu_loop(&wanbeiyu);
 
   assert(WANBEIYU_HAL_SPST_SWITCH_CLOSE == power_state);
   assert(WANBEIYU_HAL_SPST_SWITCH_OPEN == home_state);

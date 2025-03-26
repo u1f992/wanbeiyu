@@ -24,12 +24,17 @@ extern "C" {
 
 #include "wanbeiyu/compat.h"
 #include "wanbeiyu/console.h"
-#include "wanbeiyu/hal.h"
 
-#define WANBEIYU_COMMAND_GET_CONSOLE_STATE 0xf3
-#define WANBEIYU_COMMAND_SET_CONSOLE_STATE 0x4a
+extern void wanbeiyu_hal_uart_read(wanbeiyu_uint8_t *, size_t *);
+extern void wanbeiyu_hal_uart_write(const wanbeiyu_uint8_t *, size_t);
+
+#define WANBEIYU_COMMAND_GET_STATE 0xf3
+#define WANBEIYU_COMMAND_SET_STATE 0x4a
+
+#define WANBEIYU_BUFFER_SIZE 64
 
 typedef struct wanbeiyu_t {
+  wanbeiyu_uint8_t buffer[WANBEIYU_BUFFER_SIZE];
   enum {
     WANBEIYU_PARSE_STATE_INITIAL,
     WANBEIYU_PARSE_STATE_0,
@@ -54,58 +59,61 @@ static WANBEIYU_INLINE void wanbeiyu_init(wanbeiyu_t *wanbeiyu) {
   wanbeiyu_console_set(&(wanbeiyu->state));
 }
 
-static WANBEIYU_INLINE void wanbeiyu_loop(wanbeiyu_t *wanbeiyu,
-                                          const wanbeiyu_uint8_t *input,
-                                          size_t length) {
+static WANBEIYU_INLINE void wanbeiyu_loop(wanbeiyu_t *wanbeiyu) {
   size_t i;
+  size_t length;
 
   assert(wanbeiyu != NULL);
-  assert(input != NULL);
 
-  if (length == 0) {
-    wanbeiyu->parse_state = WANBEIYU_PARSE_STATE_INITIAL;
-    return;
-  }
-
-  for (i = 0; i < length; i++) {
-    wanbeiyu_uint8_t c = input[i];
-
-    switch (wanbeiyu->parse_state) {
-    case WANBEIYU_PARSE_STATE_INITIAL:
-      if (c == WANBEIYU_COMMAND_GET_CONSOLE_STATE) {
-        wanbeiyu_state_serialize(&(wanbeiyu->state), wanbeiyu->command_buffer);
-        wanbeiyu_hal_uart_write(wanbeiyu->command_buffer,
-                                sizeof(wanbeiyu->command_buffer));
-      }
-      if (c == WANBEIYU_COMMAND_SET_CONSOLE_STATE) {
-        wanbeiyu->parse_state++;
-      }
-      break;
-    case WANBEIYU_PARSE_STATE_0:
-      /* FALLTHROUGH */
-    case WANBEIYU_PARSE_STATE_1:
-      /* FALLTHROUGH */
-    case WANBEIYU_PARSE_STATE_2:
-      /* FALLTHROUGH */
-    case WANBEIYU_PARSE_STATE_3:
-      /* FALLTHROUGH */
-    case WANBEIYU_PARSE_STATE_4:
-      /* FALLTHROUGH */
-    case WANBEIYU_PARSE_STATE_5:
-      /* FALLTHROUGH */
-    case WANBEIYU_PARSE_STATE_6:
-      /* FALLTHROUGH */
-    case WANBEIYU_PARSE_STATE_7:
-      wanbeiyu->command_buffer[(wanbeiyu->parse_state++ - 1)] = c;
-      break;
-    case WANBEIYU_PARSE_STATE_8:
-      wanbeiyu->command_buffer[wanbeiyu->parse_state - 1] = c;
-      wanbeiyu_state_deserialize(wanbeiyu->command_buffer, &(wanbeiyu->state));
-      wanbeiyu_console_set(&(wanbeiyu->state));
-      /* FALLTHROUGH */
-    default:
+  while (1) {
+    wanbeiyu_hal_uart_read(wanbeiyu->buffer, &length);
+    if (length == 0) {
       wanbeiyu->parse_state = WANBEIYU_PARSE_STATE_INITIAL;
       break;
+    }
+
+    for (i = 0; i < length; i++) {
+      wanbeiyu_uint8_t c = wanbeiyu->buffer[i];
+
+      switch (wanbeiyu->parse_state) {
+      case WANBEIYU_PARSE_STATE_INITIAL:
+        if (c == WANBEIYU_COMMAND_GET_STATE) {
+          wanbeiyu_state_serialize(&(wanbeiyu->state),
+                                   wanbeiyu->command_buffer);
+          wanbeiyu_hal_uart_write(wanbeiyu->command_buffer,
+                                  sizeof(wanbeiyu->command_buffer));
+        }
+        if (c == WANBEIYU_COMMAND_SET_STATE) {
+          wanbeiyu->parse_state++;
+        }
+        break;
+      case WANBEIYU_PARSE_STATE_0:
+        /* FALLTHROUGH */
+      case WANBEIYU_PARSE_STATE_1:
+        /* FALLTHROUGH */
+      case WANBEIYU_PARSE_STATE_2:
+        /* FALLTHROUGH */
+      case WANBEIYU_PARSE_STATE_3:
+        /* FALLTHROUGH */
+      case WANBEIYU_PARSE_STATE_4:
+        /* FALLTHROUGH */
+      case WANBEIYU_PARSE_STATE_5:
+        /* FALLTHROUGH */
+      case WANBEIYU_PARSE_STATE_6:
+        /* FALLTHROUGH */
+      case WANBEIYU_PARSE_STATE_7:
+        wanbeiyu->command_buffer[(wanbeiyu->parse_state++ - 1)] = c;
+        break;
+      case WANBEIYU_PARSE_STATE_8:
+        wanbeiyu->command_buffer[wanbeiyu->parse_state - 1] = c;
+        wanbeiyu_state_deserialize(wanbeiyu->command_buffer,
+                                   &(wanbeiyu->state));
+        wanbeiyu_console_set(&(wanbeiyu->state));
+        /* FALLTHROUGH */
+      default:
+        wanbeiyu->parse_state = WANBEIYU_PARSE_STATE_INITIAL;
+        break;
+      }
     }
   }
 }
