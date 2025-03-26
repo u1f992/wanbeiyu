@@ -52,6 +52,8 @@ static WANBEIYU_INLINE void wanbeiyu_init(wanbeiyu_t *wanbeiyu) {
   assert(wanbeiyu != NULL);
 
   wanbeiyu->state = WANBEIYU_STATE_INITIAL;
+  wanbeiyu_console_state_reset(&(wanbeiyu->console_state));
+  wanbeiyu_console_set(&(wanbeiyu->console_state));
 }
 
 static WANBEIYU_INLINE void wanbeiyu_loop(wanbeiyu_t *wanbeiyu,
@@ -75,7 +77,8 @@ static WANBEIYU_INLINE void wanbeiyu_loop(wanbeiyu_t *wanbeiyu,
       if (c == WANBEIYU_COMMAND_GET_CONSOLE_STATE) {
         wanbeiyu_console_state_serialize(&(wanbeiyu->console_state),
                                          wanbeiyu->command_buffer);
-        wanbeiyu_hal_uart_write(wanbeiyu->command_buffer, sizeof(wanbeiyu->command_buffer));
+        wanbeiyu_hal_uart_write(wanbeiyu->command_buffer,
+                                sizeof(wanbeiyu->command_buffer));
       }
       if (c == WANBEIYU_COMMAND_SET_CONSOLE_STATE) {
         wanbeiyu->state++;

@@ -28,70 +28,89 @@ void wanbeiyu_hal_uart_write(const wanbeiyu_uint8_t *buffer, size_t length) {
   fprintf(stderr, "\n");
 }
 
+static wanbeiyu_hal_spst_switch_state_t power_state;
+static wanbeiyu_hal_spst_switch_state_t home_state;
+static wanbeiyu_hal_spst_switch_state_t zr_state;
+static wanbeiyu_hal_spst_switch_state_t zl_state;
+static wanbeiyu_hal_spst_switch_state_t y_state;
+static wanbeiyu_hal_spst_switch_state_t x_state;
+static wanbeiyu_hal_spst_switch_state_t l_state;
+static wanbeiyu_hal_spst_switch_state_t r_state;
+static wanbeiyu_hal_spst_switch_state_t down_state;
+static wanbeiyu_hal_spst_switch_state_t up_state;
+static wanbeiyu_hal_spst_switch_state_t left_state;
+static wanbeiyu_hal_spst_switch_state_t right_state;
+static wanbeiyu_hal_spst_switch_state_t start_state;
+static wanbeiyu_hal_spst_switch_state_t select_state;
+static wanbeiyu_hal_spst_switch_state_t b_state;
+static wanbeiyu_hal_spst_switch_state_t a_state;
+
 void wanbeiyu_hal_spst_switch_buttons_power_set(
     wanbeiyu_hal_spst_switch_state_t state) {
-  (void)state;
+  power_state = state;
 }
 void wanbeiyu_hal_spst_switch_buttons_home_set(
     wanbeiyu_hal_spst_switch_state_t state) {
-  (void)state;
+  home_state = state;
 }
 void wanbeiyu_hal_spst_switch_buttons_zr_set(
     wanbeiyu_hal_spst_switch_state_t state) {
-  (void)state;
+  zr_state = state;
 }
 void wanbeiyu_hal_spst_switch_buttons_zl_set(
     wanbeiyu_hal_spst_switch_state_t state) {
-  (void)state;
+  zl_state = state;
 }
 void wanbeiyu_hal_spst_switch_buttons_y_set(
     wanbeiyu_hal_spst_switch_state_t state) {
-  (void)state;
+  y_state = state;
 }
 void wanbeiyu_hal_spst_switch_buttons_x_set(
     wanbeiyu_hal_spst_switch_state_t state) {
-  (void)state;
+  x_state = state;
 }
 void wanbeiyu_hal_spst_switch_buttons_l_set(
     wanbeiyu_hal_spst_switch_state_t state) {
-  (void)state;
+  l_state = state;
 }
 void wanbeiyu_hal_spst_switch_buttons_r_set(
     wanbeiyu_hal_spst_switch_state_t state) {
-  (void)state;
+  r_state = state;
 }
 void wanbeiyu_hal_spst_switch_buttons_down_set(
     wanbeiyu_hal_spst_switch_state_t state) {
-  (void)state;
+  down_state = state;
 }
 void wanbeiyu_hal_spst_switch_buttons_up_set(
     wanbeiyu_hal_spst_switch_state_t state) {
-  (void)state;
+  up_state = state;
 }
 void wanbeiyu_hal_spst_switch_buttons_left_set(
     wanbeiyu_hal_spst_switch_state_t state) {
-  (void)state;
+  left_state = state;
 }
 void wanbeiyu_hal_spst_switch_buttons_right_set(
     wanbeiyu_hal_spst_switch_state_t state) {
-  (void)state;
+  right_state = state;
 }
 void wanbeiyu_hal_spst_switch_buttons_start_set(
     wanbeiyu_hal_spst_switch_state_t state) {
-  (void)state;
+  start_state = state;
 }
 void wanbeiyu_hal_spst_switch_buttons_select_set(
     wanbeiyu_hal_spst_switch_state_t state) {
-  (void)state;
+  select_state = state;
 }
 void wanbeiyu_hal_spst_switch_buttons_b_set(
     wanbeiyu_hal_spst_switch_state_t state) {
-  (void)state;
+  b_state = state;
 }
 void wanbeiyu_hal_spst_switch_buttons_a_set(
     wanbeiyu_hal_spst_switch_state_t state) {
-  (void)state;
+  a_state = state;
 }
+
+static wanbeiyu_hal_spst_switch_state_t touch_screen_state;
 
 void wanbeiyu_hal_rdac_touch_screen_horizontal_set(wanbeiyu_uint16_t position) {
   assert(position < 320);
@@ -103,8 +122,11 @@ void wanbeiyu_hal_rdac_touch_screen_vertical_set(wanbeiyu_uint8_t position) {
 }
 void wanbeiyu_hal_spst_switch_touch_screen_set(
     wanbeiyu_hal_spst_switch_state_t state) {
-  (void)state;
+  touch_screen_state = state;
 }
+
+static wanbeiyu_hal_spst_switch_state_t c_stick_negative_slope_state;
+static wanbeiyu_hal_spst_switch_state_t c_stick_positive_slope_state;
 
 void wanbeiyu_hal_idac_c_stick_positive_slope_set(wanbeiyu_hal_idac_mode_t mode,
                                                   wanbeiyu_uint8_t value) {
@@ -113,7 +135,7 @@ void wanbeiyu_hal_idac_c_stick_positive_slope_set(wanbeiyu_hal_idac_mode_t mode,
 }
 void wanbeiyu_hal_spst_switch_c_stick_positive_slope_switch_set(
     wanbeiyu_hal_spst_switch_state_t state) {
-  (void)state;
+  c_stick_positive_slope_state = state;
 }
 void wanbeiyu_hal_idac_c_stick_negative_slope_set(wanbeiyu_hal_idac_mode_t mode,
                                                   wanbeiyu_uint8_t value) {
@@ -122,8 +144,11 @@ void wanbeiyu_hal_idac_c_stick_negative_slope_set(wanbeiyu_hal_idac_mode_t mode,
 }
 void wanbeiyu_hal_spst_switch_c_stick_negative_slope_switch_set(
     wanbeiyu_hal_spst_switch_state_t state) {
-  (void)state;
+  c_stick_negative_slope_state = state;
 }
+
+static wanbeiyu_hal_spst_switch_state_t circle_pad_horizontal_state;
+static wanbeiyu_hal_spst_switch_state_t circle_pad_vertical_state;
 
 void wanbeiyu_hal_idac_circle_pad_horizontal_set(wanbeiyu_hal_idac_mode_t mode,
                                                  wanbeiyu_uint8_t value) {
@@ -132,7 +157,7 @@ void wanbeiyu_hal_idac_circle_pad_horizontal_set(wanbeiyu_hal_idac_mode_t mode,
 }
 void wanbeiyu_hal_spst_switch_circle_pad_horizontal_set(
     wanbeiyu_hal_spst_switch_state_t state) {
-  (void)state;
+  circle_pad_horizontal_state = state;
 }
 void wanbeiyu_hal_idac_circle_pad_vertical_set(wanbeiyu_hal_idac_mode_t mode,
                                                wanbeiyu_uint8_t value) {
@@ -141,17 +166,42 @@ void wanbeiyu_hal_idac_circle_pad_vertical_set(wanbeiyu_hal_idac_mode_t mode,
 }
 void wanbeiyu_hal_spst_switch_circle_pad_vertical_set(
     wanbeiyu_hal_spst_switch_state_t state) {
-  (void)state;
+  circle_pad_vertical_state = state;
 }
 
 int main(void) {
   wanbeiyu_t wanbeiyu;
 
-  wanbeiyu_uint8_t input[10] = {
-      WANBEIYU_COMMAND_SET_CONSOLE_STATE, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+  wanbeiyu_uint8_t input[] = {
+      WANBEIYU_COMMAND_SET_CONSOLE_STATE, 0xaa, 0x55, 0xf8, 1, 2, 3, 4, 5, 6,
+      WANBEIYU_COMMAND_GET_CONSOLE_STATE};
 
   wanbeiyu_init(&wanbeiyu);
-
   wanbeiyu_loop(&wanbeiyu, input, sizeof(input));
+
+  assert(WANBEIYU_HAL_SPST_SWITCH_CLOSE == power_state);
+  assert(WANBEIYU_HAL_SPST_SWITCH_OPEN == home_state);
+  assert(WANBEIYU_HAL_SPST_SWITCH_CLOSE == zr_state);
+  assert(WANBEIYU_HAL_SPST_SWITCH_OPEN == zl_state);
+  assert(WANBEIYU_HAL_SPST_SWITCH_CLOSE == y_state);
+  assert(WANBEIYU_HAL_SPST_SWITCH_OPEN == x_state);
+  assert(WANBEIYU_HAL_SPST_SWITCH_CLOSE == l_state);
+  assert(WANBEIYU_HAL_SPST_SWITCH_OPEN == r_state);
+
+  assert(WANBEIYU_HAL_SPST_SWITCH_OPEN == down_state);
+  assert(WANBEIYU_HAL_SPST_SWITCH_CLOSE == up_state);
+  assert(WANBEIYU_HAL_SPST_SWITCH_OPEN == left_state);
+  assert(WANBEIYU_HAL_SPST_SWITCH_CLOSE == right_state);
+  assert(WANBEIYU_HAL_SPST_SWITCH_OPEN == start_state);
+  assert(WANBEIYU_HAL_SPST_SWITCH_CLOSE == select_state);
+  assert(WANBEIYU_HAL_SPST_SWITCH_OPEN == b_state);
+  assert(WANBEIYU_HAL_SPST_SWITCH_CLOSE == a_state);
+
+  assert(WANBEIYU_HAL_SPST_SWITCH_CLOSE == touch_screen_state);
+  assert(WANBEIYU_HAL_SPST_SWITCH_CLOSE == c_stick_negative_slope_state);
+  assert(WANBEIYU_HAL_SPST_SWITCH_CLOSE == c_stick_positive_slope_state);
+  assert(WANBEIYU_HAL_SPST_SWITCH_CLOSE == circle_pad_horizontal_state);
+  assert(WANBEIYU_HAL_SPST_SWITCH_CLOSE == circle_pad_vertical_state);
+
   return 0;
 }
