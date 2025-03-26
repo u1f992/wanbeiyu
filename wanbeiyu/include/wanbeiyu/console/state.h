@@ -136,29 +136,12 @@ typedef struct wanbeiyu_c_stick_state_t {
 typedef wanbeiyu_c_stick_state_t wanbeiyu_circle_pad_state_t;
 
 typedef struct wanbeiyu_console_state_t {
-  wanbeiyu_bool_t power;
-  wanbeiyu_bool_t home;
-  wanbeiyu_bool_t zr;
-  wanbeiyu_bool_t zl;
-  wanbeiyu_bool_t y;
-  wanbeiyu_bool_t x;
-  wanbeiyu_bool_t l;
-  wanbeiyu_bool_t r;
-
-  wanbeiyu_bool_t down;
-  wanbeiyu_bool_t up;
-  wanbeiyu_bool_t left;
-  wanbeiyu_bool_t right;
-  wanbeiyu_bool_t start;
-  wanbeiyu_bool_t select;
-  wanbeiyu_bool_t b;
-  wanbeiyu_bool_t a;
-
+  wanbeiyu_uint16_t buttons;
   wanbeiyu_touch_screen_state_t *touch_screen;
   wanbeiyu_c_stick_state_t c_stick;
   wanbeiyu_circle_pad_state_t circle_pad;
-  wanbeiyu_bool_t reserved_0;
-  wanbeiyu_bool_t reserved_1;
+  wanbeiyu_uint8_t reserved_0;
+  wanbeiyu_uint8_t reserved_1;
 
   wanbeiyu_touch_screen_state_t stash_touch_screen;
   struct {
@@ -179,24 +162,7 @@ wanbeiyu_console_state_deserialize(const wanbeiyu_uint8_t *buffer,
   /* assert(sizeof(buffer) == 9); */
   assert(state != NULL);
 
-  state->power = (buffer[0] >> 7) & 1;
-  state->home = (buffer[0] >> 6) & 1;
-  state->zr = (buffer[0] >> 5) & 1;
-  state->zl = (buffer[0] >> 4) & 1;
-  state->y = (buffer[0] >> 3) & 1;
-  state->x = (buffer[0] >> 2) & 1;
-  state->l = (buffer[0] >> 1) & 1;
-  state->r = (buffer[0] >> 0) & 1;
-
-  state->down = (buffer[1] >> 7) & 1;
-  state->up = (buffer[1] >> 6) & 1;
-  state->left = (buffer[1] >> 5) & 1;
-  state->right = (buffer[1] >> 4) & 1;
-  state->start = (buffer[1] >> 3) & 1;
-  state->select = (buffer[1] >> 2) & 1;
-  state->b = (buffer[1] >> 1) & 1;
-  state->a = (buffer[1] >> 0) & 1;
-
+  state->buttons = ((wanbeiyu_uint16_t)buffer[0] << 8) | buffer[1];
   state->touch_screen =
       (buffer[2] >> 7) & 1 ? &(state->stash_touch_screen) : NULL;
   state->c_stick.x = (buffer[2] >> 6) & 1 ? &(state->stach_c_stick.x) : NULL;
@@ -225,15 +191,8 @@ wanbeiyu_console_state_serialize(const wanbeiyu_console_state_t *state,
   assert(buffer != NULL);
   /* assert(sizeof(buffer) == 9); */
 
-  buffer[0] = ((state->power & 1) << 7) | ((state->home & 1) << 6) |
-              ((state->zr & 1) << 5) | ((state->zl & 1) << 4) |
-              ((state->y & 1) << 3) | ((state->x & 1) << 2) |
-              ((state->l & 1) << 1) | ((state->r & 1) << 0);
-
-  buffer[1] = ((state->down & 1) << 7) | ((state->up & 1) << 6) |
-              ((state->left & 1) << 5) | ((state->right & 1) << 4) |
-              ((state->start & 1) << 3) | ((state->select & 1) << 2) |
-              ((state->b & 1) << 1) | ((state->a & 1) << 0);
+  buffer[0] = (wanbeiyu_uint8_t)(state->buttons >> 8);
+  buffer[1] = (wanbeiyu_uint8_t)(state->buttons & 0xFF);
 
   buffer[2] = ((state->touch_screen != NULL ? 1 : 0) << 7) |
               ((state->c_stick.x != NULL ? 1 : 0) << 6) |

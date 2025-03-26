@@ -33,12 +33,7 @@ static WANBEIYU_INLINE void
 wanbeiyu_console_set(const wanbeiyu_console_state_t *state) {
   assert(state != NULL);
 
-  wanbeiyu_console_buttons_set(
-      state->power << 15 | state->home << 14 | state->zr << 13 |
-      state->zl << 12 | state->y << 11 | state->x << 10 | state->l << 9 |
-      state->r << 8 | state->down << 7 | state->up << 6 | state->left << 5 |
-      state->right << 4 | state->start << 3 | state->select << 2 |
-      state->b << 1 | state->a << 0);
+  wanbeiyu_console_buttons_set(state->buttons);
   wanbeiyu_console_touch_screen_set(state->touch_screen);
   wanbeiyu_console_c_stick_set(&(state->c_stick));
   wanbeiyu_console_circle_pad_set(&(state->circle_pad));

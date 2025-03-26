@@ -33,10 +33,6 @@ extern "C" {
 
 #define WANBEIYU_INLINE inline
 
-typedef bool wanbeiyu_bool_t;
-#define WANBEIYU_FALSE false
-#define WANBEIYU_TRUE true
-
 #define WANBEIYU_UINT8_MAX UINT8_MAX
 typedef uint8_t wanbeiyu_uint8_t;
 
@@ -46,10 +42,6 @@ typedef uint16_t wanbeiyu_uint16_t;
 #else /* __STDC_VERSION__ < 199901L */
 
 #define WANBEIYU_INLINE
-
-typedef unsigned char wanbeiyu_bool_t;
-#define WANBEIYU_FALSE 0
-#define WANBEIYU_TRUE 1
 
 #define WANBEIYU_UINT8_MAX 0xff
 typedef unsigned char wanbeiyu_uint8_t;
