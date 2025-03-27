@@ -26,38 +26,21 @@ extern "C" {
 #include "wanbeiyu/c_stick.h"
 #include "wanbeiyu/circle_pad.h"
 #include "wanbeiyu/compat.h"
+#include "wanbeiyu/parser.h"
 #include "wanbeiyu/touch_screen.h"
 
 extern void wanbeiyu_hal_uart_read(wanbeiyu_uint8_t *, size_t *);
 extern void wanbeiyu_hal_uart_write(const wanbeiyu_uint8_t *, size_t);
-
-#define WANBEIYU_COMMAND_GET_STATE 0xf3
-#define WANBEIYU_COMMAND_SET_STATE 0x4a
 
 #define WANBEIYU_BUFFER_SIZE 64
 #define WANBEIYU_CONSOLE_SIZE 4
 
 static struct {
   void (*const console[WANBEIYU_CONSOLE_SIZE])(const wanbeiyu_state_t *);
-  enum {
-    WANBEIYU_PARSE_STATE_INITIAL,
-    WANBEIYU_PARSE_STATE_0,
-    WANBEIYU_PARSE_STATE_1,
-    WANBEIYU_PARSE_STATE_2,
-    WANBEIYU_PARSE_STATE_3,
-    WANBEIYU_PARSE_STATE_4,
-    WANBEIYU_PARSE_STATE_5,
-    WANBEIYU_PARSE_STATE_6,
-    WANBEIYU_PARSE_STATE_7,
-    WANBEIYU_PARSE_STATE_8
-  } parse_state;
   wanbeiyu_uint8_t buffer[WANBEIYU_BUFFER_SIZE];
-  wanbeiyu_uint8_t command_buffer[9];
   wanbeiyu_state_t state;
 } wanbeiyu = {{wanbeiyu_buttons_set, wanbeiyu_touch_screen_set,
                wanbeiyu_c_stick_set, wanbeiyu_circle_pad_set},
-              WANBEIYU_PARSE_STATE_INITIAL,
-              {0},
               {0},
               {0}};
 
@@ -78,6 +61,19 @@ static WANBEIYU_INLINE void wanbeiyu_init(void) {
   wanbeiyu_state_reset(&(wanbeiyu.state));
   wanbeiyu_console_set(wanbeiyu.console, WANBEIYU_CONSOLE_SIZE,
                        &(wanbeiyu.state));
+  wanbeiyu_parser_reset();
+}
+
+void wanbeiyu_parser_on_get(void) {
+  wanbeiyu_uint8_t buffer[9];
+  wanbeiyu_state_serialize(&(wanbeiyu.state), buffer);
+  wanbeiyu_hal_uart_write(buffer, sizeof(buffer));
+}
+
+void wanbeiyu_parser_on_set(wanbeiyu_uint8_t const *buffer) {
+  wanbeiyu_state_deserialize(buffer, &(wanbeiyu.state));
+  wanbeiyu_console_set(wanbeiyu.console, WANBEIYU_CONSOLE_SIZE,
+                       &(wanbeiyu.state));
 }
 
 static WANBEIYU_INLINE void wanbeiyu_loop(void) {
@@ -87,51 +83,13 @@ static WANBEIYU_INLINE void wanbeiyu_loop(void) {
   while (1) {
     wanbeiyu_hal_uart_read(wanbeiyu.buffer, &length);
     if (length == 0) {
-      wanbeiyu.parse_state = WANBEIYU_PARSE_STATE_INITIAL;
+      wanbeiyu_parser_reset();
       break;
     }
 
     for (i = 0; i < length; i++) {
       wanbeiyu_uint8_t c = wanbeiyu.buffer[i];
-
-      switch (wanbeiyu.parse_state) {
-      case WANBEIYU_PARSE_STATE_INITIAL:
-        if (c == WANBEIYU_COMMAND_GET_STATE) {
-          wanbeiyu_state_serialize(&(wanbeiyu.state), wanbeiyu.command_buffer);
-          wanbeiyu_hal_uart_write(wanbeiyu.command_buffer,
-                                  sizeof(wanbeiyu.command_buffer));
-        }
-        if (c == WANBEIYU_COMMAND_SET_STATE) {
-          wanbeiyu.parse_state++;
-        }
-        break;
-      case WANBEIYU_PARSE_STATE_0:
-        /* FALLTHROUGH */
-      case WANBEIYU_PARSE_STATE_1:
-        /* FALLTHROUGH */
-      case WANBEIYU_PARSE_STATE_2:
-        /* FALLTHROUGH */
-      case WANBEIYU_PARSE_STATE_3:
-        /* FALLTHROUGH */
-      case WANBEIYU_PARSE_STATE_4:
-        /* FALLTHROUGH */
-      case WANBEIYU_PARSE_STATE_5:
-        /* FALLTHROUGH */
-      case WANBEIYU_PARSE_STATE_6:
-        /* FALLTHROUGH */
-      case WANBEIYU_PARSE_STATE_7:
-        wanbeiyu.command_buffer[(wanbeiyu.parse_state++ - 1)] = c;
-        break;
-      case WANBEIYU_PARSE_STATE_8:
-        wanbeiyu.command_buffer[wanbeiyu.parse_state - 1] = c;
-        wanbeiyu_state_deserialize(wanbeiyu.command_buffer, &(wanbeiyu.state));
-        wanbeiyu_console_set(wanbeiyu.console, WANBEIYU_CONSOLE_SIZE,
-                             &(wanbeiyu.state));
-        /* FALLTHROUGH */
-      default:
-        wanbeiyu.parse_state = WANBEIYU_PARSE_STATE_INITIAL;
-        break;
-      }
+      wanbeiyu_parser_feed(c);
     }
   }
 }
