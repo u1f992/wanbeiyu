@@ -15,3 +15,7 @@ enable_testing()
 add_executable(wanbeiyu_test test/main.c)
 target_link_libraries(wanbeiyu_test wanbeiyu)
 add_test(NAME wanbeiyu_test COMMAND wanbeiyu_test)
+
+add_executable(wanbeiyu_test_helper test/helper.c)
+target_link_libraries(wanbeiyu_test_helper wanbeiyu)
+add_test(NAME wanbeiyu_test_helper COMMAND wanbeiyu_test_helper)

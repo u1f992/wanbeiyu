@@ -23,17 +23,16 @@ extern "C" {
 #endif
 
 #include "hal.h"
+#include "helper.h"
 #include "state.h"
 
-extern void
-    wanbeiyu_hal_idac_c_stick_positive_slope_set(wanbeiyu_hal_idac_mode_t,
-                                                 wanbeiyu_uint8_t);
-extern void wanbeiyu_hal_spst_switch_c_stick_positive_slope_switch_set(
+extern void wanbeiyu_hal_idac_c_stick_pin_1_set(wanbeiyu_hal_idac_mode_t,
+                                                wanbeiyu_uint8_t);
+extern void wanbeiyu_hal_spst_switch_c_stick_pin_1_set(
     wanbeiyu_hal_spst_switch_state_t);
-extern void
-    wanbeiyu_hal_idac_c_stick_negative_slope_set(wanbeiyu_hal_idac_mode_t,
-                                                 wanbeiyu_uint8_t);
-extern void wanbeiyu_hal_spst_switch_c_stick_negative_slope_switch_set(
+extern void wanbeiyu_hal_idac_c_stick_pin_3_set(wanbeiyu_hal_idac_mode_t,
+                                                wanbeiyu_uint8_t);
+extern void wanbeiyu_hal_spst_switch_c_stick_pin_3_set(
     wanbeiyu_hal_spst_switch_state_t);
 
 /**
@@ -48,12 +47,6 @@ extern void wanbeiyu_hal_spst_switch_c_stick_negative_slope_switch_set(
  *
  * (Pin numbers of Hirose FH33-4S-1SH(10))
  */
-static WANBEIYU_INLINE int wanbeiyu_internal_abs(int value) {
-  assert(INT_MIN + 1 <= value);
-
-  return value > 0 ? value : -value;
-}
-
 static WANBEIYU_INLINE void
 wanbeiyu_c_stick_set(const wanbeiyu_c_stick_state_t *state) {
   /*
@@ -78,17 +71,17 @@ wanbeiyu_c_stick_set(const wanbeiyu_c_stick_state_t *state) {
   assert(-255 <= d1 && d1 <= 255);
   assert(-255 <= d3 && d3 <= 255);
 
-  wanbeiyu_hal_idac_c_stick_negative_slope_set(
+  wanbeiyu_hal_idac_c_stick_pin_1_set(
       d1 > 0 ? WANBEIYU_HAL_IDAC_SOURCE : WANBEIYU_HAL_IDAC_SINK,
-      (wanbeiyu_uint8_t)wanbeiyu_internal_abs(d1));
-  wanbeiyu_hal_spst_switch_c_stick_negative_slope_switch_set(
+      (wanbeiyu_uint8_t)wanbeiyu_helper_abs(d1));
+  wanbeiyu_hal_spst_switch_c_stick_pin_1_set(
       d1 == 0 && x == y ? WANBEIYU_HAL_SPST_SWITCH_OPEN
                         : WANBEIYU_HAL_SPST_SWITCH_CLOSE);
 
-  wanbeiyu_hal_idac_c_stick_positive_slope_set(
+  wanbeiyu_hal_idac_c_stick_pin_3_set(
       d3 > 0 ? WANBEIYU_HAL_IDAC_SOURCE : WANBEIYU_HAL_IDAC_SINK,
-      (wanbeiyu_uint8_t)wanbeiyu_internal_abs(d3));
-  wanbeiyu_hal_spst_switch_c_stick_positive_slope_switch_set(
+      (wanbeiyu_uint8_t)wanbeiyu_helper_abs(d3));
+  wanbeiyu_hal_spst_switch_c_stick_pin_3_set(
       d3 == 0 && 255 - x == y ? WANBEIYU_HAL_SPST_SWITCH_OPEN
                               : WANBEIYU_HAL_SPST_SWITCH_CLOSE);
 }
