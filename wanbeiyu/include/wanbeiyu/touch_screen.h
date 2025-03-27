@@ -25,8 +25,8 @@ extern "C" {
 #include "hal.h"
 #include "state.h"
 
-extern void wanbeiyu_hal_rdac_touch_screen_pin_3_1_set(wanbeiyu_uint16_t);
-extern void wanbeiyu_hal_rdac_touch_screen_pin_2_4_set(wanbeiyu_uint8_t);
+extern void wanbeiyu_hal_rdac_touch_screen_pin_2_4_set(wanbeiyu_uint16_t);
+extern void wanbeiyu_hal_rdac_touch_screen_pin_3_1_set(wanbeiyu_uint8_t);
 extern void
     wanbeiyu_hal_spst_switch_touch_screen_set(wanbeiyu_hal_spst_switch_state_t);
 
@@ -48,8 +48,8 @@ wanbeiyu_touch_screen_set(const wanbeiyu_touch_screen_state_t *state) {
   if (state == NULL) {
     wanbeiyu_hal_spst_switch_touch_screen_set(WANBEIYU_HAL_SPST_SWITCH_OPEN);
   } else {
-    wanbeiyu_hal_rdac_touch_screen_pin_3_1_set(state->x < 320 ? state->x : 319);
-    wanbeiyu_hal_rdac_touch_screen_pin_2_4_set(state->y < 240 ? state->y : 239);
+    wanbeiyu_hal_rdac_touch_screen_pin_2_4_set(state->x < 320 ? state->x : 319);
+    wanbeiyu_hal_rdac_touch_screen_pin_3_1_set(state->y < 240 ? state->y : 239);
     wanbeiyu_hal_spst_switch_touch_screen_set(WANBEIYU_HAL_SPST_SWITCH_CLOSE);
   }
 }

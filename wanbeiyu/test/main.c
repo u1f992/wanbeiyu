@@ -135,11 +135,11 @@ void wanbeiyu_hal_spst_switch_buttons_a_set(
 
 static wanbeiyu_hal_spst_switch_state_t touch_screen_state;
 
-void wanbeiyu_hal_rdac_touch_screen_pin_3_1_set(wanbeiyu_uint16_t position) {
+void wanbeiyu_hal_rdac_touch_screen_pin_2_4_set(wanbeiyu_uint16_t position) {
   assert(position < 320);
   (void)position;
 }
-void wanbeiyu_hal_rdac_touch_screen_pin_2_4_set(wanbeiyu_uint8_t position) {
+void wanbeiyu_hal_rdac_touch_screen_pin_3_1_set(wanbeiyu_uint8_t position) {
   assert(position < 240);
   (void)position;
 }
