@@ -69,23 +69,27 @@ extern void
  *               |
  *               v GND
  */
-static WANBEIYU_INLINE void wanbeiyu_buttons_set(wanbeiyu_uint16_t states) {
-  wanbeiyu_hal_spst_switch_buttons_power_set((states >> 15) & 1);
-  wanbeiyu_hal_spst_switch_buttons_home_set((states >> 14) & 1);
-  wanbeiyu_hal_spst_switch_buttons_zr_set((states >> 13) & 1);
-  wanbeiyu_hal_spst_switch_buttons_zl_set((states >> 12) & 1);
-  wanbeiyu_hal_spst_switch_buttons_y_set((states >> 11) & 1);
-  wanbeiyu_hal_spst_switch_buttons_x_set((states >> 10) & 1);
-  wanbeiyu_hal_spst_switch_buttons_l_set((states >> 9) & 1);
-  wanbeiyu_hal_spst_switch_buttons_r_set((states >> 8) & 1);
-  wanbeiyu_hal_spst_switch_buttons_down_set((states >> 7) & 1);
-  wanbeiyu_hal_spst_switch_buttons_up_set((states >> 6) & 1);
-  wanbeiyu_hal_spst_switch_buttons_left_set((states >> 5) & 1);
-  wanbeiyu_hal_spst_switch_buttons_right_set((states >> 4) & 1);
-  wanbeiyu_hal_spst_switch_buttons_start_set((states >> 3) & 1);
-  wanbeiyu_hal_spst_switch_buttons_select_set((states >> 2) & 1);
-  wanbeiyu_hal_spst_switch_buttons_b_set((states >> 1) & 1);
-  wanbeiyu_hal_spst_switch_buttons_a_set((states >> 0) & 1);
+static WANBEIYU_INLINE void
+wanbeiyu_buttons_set(const wanbeiyu_state_t *state) {
+  wanbeiyu_uint16_t buttons;
+  assert(state != NULL);
+  buttons = state->buttons;
+  wanbeiyu_hal_spst_switch_buttons_power_set((buttons >> 15) & 1);
+  wanbeiyu_hal_spst_switch_buttons_home_set((buttons >> 14) & 1);
+  wanbeiyu_hal_spst_switch_buttons_zr_set((buttons >> 13) & 1);
+  wanbeiyu_hal_spst_switch_buttons_zl_set((buttons >> 12) & 1);
+  wanbeiyu_hal_spst_switch_buttons_y_set((buttons >> 11) & 1);
+  wanbeiyu_hal_spst_switch_buttons_x_set((buttons >> 10) & 1);
+  wanbeiyu_hal_spst_switch_buttons_l_set((buttons >> 9) & 1);
+  wanbeiyu_hal_spst_switch_buttons_r_set((buttons >> 8) & 1);
+  wanbeiyu_hal_spst_switch_buttons_down_set((buttons >> 7) & 1);
+  wanbeiyu_hal_spst_switch_buttons_up_set((buttons >> 6) & 1);
+  wanbeiyu_hal_spst_switch_buttons_left_set((buttons >> 5) & 1);
+  wanbeiyu_hal_spst_switch_buttons_right_set((buttons >> 4) & 1);
+  wanbeiyu_hal_spst_switch_buttons_start_set((buttons >> 3) & 1);
+  wanbeiyu_hal_spst_switch_buttons_select_set((buttons >> 2) & 1);
+  wanbeiyu_hal_spst_switch_buttons_b_set((buttons >> 1) & 1);
+  wanbeiyu_hal_spst_switch_buttons_a_set((buttons >> 0) & 1);
 }
 
 #ifdef __cplusplus

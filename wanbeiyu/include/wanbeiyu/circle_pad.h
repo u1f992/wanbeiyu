@@ -62,18 +62,20 @@ extern void wanbeiyu_hal_spst_switch_circle_pad_pin_4_set(
  * (Pin numbers of Molex 5014610491)
  */
 static WANBEIYU_INLINE void
-wanbeiyu_circle_pad_set(const wanbeiyu_circle_pad_state_t *state) {
+wanbeiyu_circle_pad_set(const wanbeiyu_state_t *state) {
+  const wanbeiyu_circle_pad_state_t *circle_pad;
   assert(state != NULL);
+  circle_pad = &(state->circle_pad);
 
-  if (state->x != NULL) {
-    if (*(state->x) < 128) {
+  if (circle_pad->x != NULL) {
+    if (*(circle_pad->x) < 128) {
       wanbeiyu_hal_idac_circle_pad_pin_2_set(
           WANBEIYU_HAL_IDAC_SOURCE,
-          wanbeiyu_helper_map_127_to_255(127 - *(state->x)));
+          wanbeiyu_helper_map_127_to_255(127 - *(circle_pad->x)));
     } else {
       wanbeiyu_hal_idac_circle_pad_pin_2_set(
           WANBEIYU_HAL_IDAC_SINK,
-          wanbeiyu_helper_map_127_to_255(*(state->x) - 128));
+          wanbeiyu_helper_map_127_to_255(*(circle_pad->x) - 128));
     }
     wanbeiyu_hal_spst_switch_circle_pad_pin_2_set(
         WANBEIYU_HAL_SPST_SWITCH_CLOSE);
@@ -82,15 +84,15 @@ wanbeiyu_circle_pad_set(const wanbeiyu_circle_pad_state_t *state) {
         WANBEIYU_HAL_SPST_SWITCH_OPEN);
   }
 
-  if (state->y != NULL) {
-    if (*(state->y) < 128) {
+  if (circle_pad->y != NULL) {
+    if (*(circle_pad->y) < 128) {
       wanbeiyu_hal_idac_circle_pad_pin_4_set(
           WANBEIYU_HAL_IDAC_SINK,
-          wanbeiyu_helper_map_127_to_255(127 - *(state->y)));
+          wanbeiyu_helper_map_127_to_255(127 - *(circle_pad->y)));
     } else {
       wanbeiyu_hal_idac_circle_pad_pin_4_set(
           WANBEIYU_HAL_IDAC_SOURCE,
-          wanbeiyu_helper_map_127_to_255(*(state->y) - 128));
+          wanbeiyu_helper_map_127_to_255(*(circle_pad->y) - 128));
     }
     wanbeiyu_hal_spst_switch_circle_pad_pin_4_set(
         WANBEIYU_HAL_SPST_SWITCH_CLOSE);

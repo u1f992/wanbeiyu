@@ -48,7 +48,7 @@ extern void wanbeiyu_hal_spst_switch_c_stick_pin_3_set(
  * (Pin numbers of Hirose FH33-4S-1SH(10))
  */
 static WANBEIYU_INLINE void
-wanbeiyu_c_stick_set(const wanbeiyu_c_stick_state_t *state) {
+wanbeiyu_c_stick_set(const wanbeiyu_state_t *state) {
   /*
    * d1 = signed_distance_to(y=x) / DISTANCE_MAX * UINT8_MAX
    * d3 = signed_distance_to(y=-x+255) / DISTANCE_MAX * UINT8_MAX
@@ -62,12 +62,19 @@ wanbeiyu_c_stick_set(const wanbeiyu_c_stick_state_t *state) {
    * ((-a*x+y-b)/sqrt(2)) / (UINT8_MAX/2*sqrt(2)) * UINT8_MAX
    * = -a*x+y-b
    */
-  wanbeiyu_uint8_t x = state->x != NULL ? *(state->x) : 0x80;
-  wanbeiyu_uint8_t y = state->y != NULL ? *(state->y) : 0x80;
-  int d1 = -x + y;
-  int d3 = x + y - 255;
+  const wanbeiyu_c_stick_state_t *c_stick;
+  wanbeiyu_uint8_t x;
+  wanbeiyu_uint8_t y;
+  int d1;
+  int d3;
 
   assert(state != NULL);
+
+  c_stick = &(state->c_stick);
+  x = c_stick->x != NULL ? *(c_stick->x) : 0x80;
+  y = c_stick->y != NULL ? *(c_stick->y) : 0x80;
+  d1 = -x + y;
+  d3 = x + y - 255;
   assert(-255 <= d1 && d1 <= 255);
   assert(-255 <= d3 && d3 <= 255);
 

@@ -22,8 +22,11 @@
 extern "C" {
 #endif
 
+#include "wanbeiyu/buttons.h"
+#include "wanbeiyu/c_stick.h"
+#include "wanbeiyu/circle_pad.h"
 #include "wanbeiyu/compat.h"
-#include "wanbeiyu/console.h"
+#include "wanbeiyu/touch_screen.h"
 
 extern void wanbeiyu_hal_uart_read(wanbeiyu_uint8_t *, size_t *);
 extern void wanbeiyu_hal_uart_write(const wanbeiyu_uint8_t *, size_t);
@@ -32,8 +35,10 @@ extern void wanbeiyu_hal_uart_write(const wanbeiyu_uint8_t *, size_t);
 #define WANBEIYU_COMMAND_SET_STATE 0x4a
 
 #define WANBEIYU_BUFFER_SIZE 64
+#define WANBEIYU_CONSOLE_SET_SIZE 4
 
 typedef struct wanbeiyu_t {
+  void (*console_set[WANBEIYU_CONSOLE_SET_SIZE])(const wanbeiyu_state_t *);
   wanbeiyu_uint8_t buffer[WANBEIYU_BUFFER_SIZE];
   enum {
     WANBEIYU_PARSE_STATE_INITIAL,
@@ -51,12 +56,31 @@ typedef struct wanbeiyu_t {
   wanbeiyu_state_t state;
 } wanbeiyu_t;
 
+static WANBEIYU_INLINE void
+wanbeiyu_console_set(void (*const console_set[])(const wanbeiyu_state_t *),
+                     size_t length, const wanbeiyu_state_t *state) {
+  size_t i;
+
+  assert(console_set != NULL);
+  assert(state != NULL);
+
+  for (i = 0; i < length; i++) {
+    console_set[i](state);
+  }
+}
+
 static WANBEIYU_INLINE void wanbeiyu_init(wanbeiyu_t *wanbeiyu) {
   assert(wanbeiyu != NULL);
 
+  wanbeiyu->console_set[0] = wanbeiyu_buttons_set;
+  wanbeiyu->console_set[1] = wanbeiyu_touch_screen_set;
+  wanbeiyu->console_set[2] = wanbeiyu_c_stick_set;
+  wanbeiyu->console_set[3] = wanbeiyu_circle_pad_set;
+
   wanbeiyu->parse_state = WANBEIYU_PARSE_STATE_INITIAL;
   wanbeiyu_state_reset(&(wanbeiyu->state));
-  wanbeiyu_console_set(&(wanbeiyu->state));
+  wanbeiyu_console_set(wanbeiyu->console_set, WANBEIYU_CONSOLE_SET_SIZE,
+                       &(wanbeiyu->state));
 }
 
 static WANBEIYU_INLINE void wanbeiyu_loop(wanbeiyu_t *wanbeiyu) {
@@ -108,7 +132,8 @@ static WANBEIYU_INLINE void wanbeiyu_loop(wanbeiyu_t *wanbeiyu) {
         wanbeiyu->command_buffer[wanbeiyu->parse_state - 1] = c;
         wanbeiyu_state_deserialize(wanbeiyu->command_buffer,
                                    &(wanbeiyu->state));
-        wanbeiyu_console_set(&(wanbeiyu->state));
+        wanbeiyu_console_set(wanbeiyu->console_set, WANBEIYU_CONSOLE_SET_SIZE,
+                             &(wanbeiyu->state));
         /* FALLTHROUGH */
       default:
         wanbeiyu->parse_state = WANBEIYU_PARSE_STATE_INITIAL;
