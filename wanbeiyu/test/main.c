@@ -40,7 +40,7 @@ void wanbeiyu_hal_uart_read(wanbeiyu_uint8_t *buffer, size_t *length) {
     *length = 0;
   }
 
-  assert(*length <= WANBEIYU_BUFFER_SIZE);
+  assert(*length <= WANBEIYU_HAL_UART_BUFFER_SIZE);
 }
 
 void wanbeiyu_hal_uart_write(const wanbeiyu_uint8_t *buffer, size_t length) {

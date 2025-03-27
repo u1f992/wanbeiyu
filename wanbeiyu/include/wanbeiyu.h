@@ -29,10 +29,10 @@ extern "C" {
 #include "wanbeiyu/parser.h"
 #include "wanbeiyu/touch_screen.h"
 
+#define WANBEIYU_HAL_UART_BUFFER_SIZE 64
+
 extern void wanbeiyu_hal_uart_read(wanbeiyu_uint8_t *, size_t *);
 extern void wanbeiyu_hal_uart_write(wanbeiyu_uint8_t const *, size_t);
-
-#define WANBEIYU_BUFFER_SIZE 64
 
 void wanbeiyu_init(void);
 void wanbeiyu_loop(void);
