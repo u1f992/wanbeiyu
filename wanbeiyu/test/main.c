@@ -193,10 +193,8 @@ void wanbeiyu_hal_spst_switch_circle_pad_pin_4_set(
 }
 
 int main(void) {
-  wanbeiyu_t wanbeiyu;
-
-  wanbeiyu_init(&wanbeiyu);
-  wanbeiyu_loop(&wanbeiyu);
+  wanbeiyu_init();
+  wanbeiyu_loop();
 
   assert(WANBEIYU_HAL_SPST_SWITCH_CLOSE == power_state);
   assert(WANBEIYU_HAL_SPST_SWITCH_OPEN == home_state);
