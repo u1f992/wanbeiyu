@@ -17,6 +17,9 @@
 
 #include <wanbeiyu.h>
 
+extern void wanbeiyu_hal_uart_read(wanbeiyu_uint8_t *, size_t *);
+extern void wanbeiyu_hal_uart_write(wanbeiyu_uint8_t const *, size_t);
+
 #define WANBEIYU_CONSOLE_SIZE 4
 
 static struct {

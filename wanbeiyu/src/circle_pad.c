@@ -17,6 +17,15 @@
 
 #include <wanbeiyu/circle_pad.h>
 
+extern void wanbeiyu_hal_idac_circle_pad_pin_2_set(wanbeiyu_hal_idac_mode_t,
+                                                   wanbeiyu_uint8_t);
+extern void wanbeiyu_hal_spst_switch_circle_pad_pin_2_set(
+    wanbeiyu_hal_spst_switch_state_t);
+extern void wanbeiyu_hal_idac_circle_pad_pin_4_set(wanbeiyu_hal_idac_mode_t,
+                                                   wanbeiyu_uint8_t);
+extern void wanbeiyu_hal_spst_switch_circle_pad_pin_4_set(
+    wanbeiyu_hal_spst_switch_state_t);
+
 void wanbeiyu_circle_pad_set(wanbeiyu_state_t const *state) {
   const wanbeiyu_circle_pad_state_t *circle_pad;
   assert(state != NULL);

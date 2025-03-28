@@ -25,11 +25,6 @@ extern "C" {
 #include "hal.h"
 #include "state.h"
 
-extern void wanbeiyu_hal_rdac_touch_screen_pin_2_4_set(wanbeiyu_uint16_t);
-extern void wanbeiyu_hal_rdac_touch_screen_pin_3_1_set(wanbeiyu_uint8_t);
-extern void
-    wanbeiyu_hal_spst_switch_touch_screen_set(wanbeiyu_hal_spst_switch_state_t);
-
 /**
  *   | Y_{B}
  *  .-.     _|_

@@ -26,15 +26,6 @@ extern "C" {
 #include "helper.h"
 #include "state.h"
 
-extern void wanbeiyu_hal_idac_c_stick_pin_1_set(wanbeiyu_hal_idac_mode_t,
-                                                wanbeiyu_uint8_t);
-extern void wanbeiyu_hal_spst_switch_c_stick_pin_1_set(
-    wanbeiyu_hal_spst_switch_state_t);
-extern void wanbeiyu_hal_idac_c_stick_pin_3_set(wanbeiyu_hal_idac_mode_t,
-                                                wanbeiyu_uint8_t);
-extern void wanbeiyu_hal_spst_switch_c_stick_pin_3_set(
-    wanbeiyu_hal_spst_switch_state_t);
-
 /**
  *   1+         3+
  *     \_     _/

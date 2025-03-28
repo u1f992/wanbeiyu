@@ -17,6 +17,15 @@
 
 #include <wanbeiyu/c_stick.h>
 
+extern void wanbeiyu_hal_idac_c_stick_pin_1_set(wanbeiyu_hal_idac_mode_t,
+                                                wanbeiyu_uint8_t);
+extern void wanbeiyu_hal_spst_switch_c_stick_pin_1_set(
+    wanbeiyu_hal_spst_switch_state_t);
+extern void wanbeiyu_hal_idac_c_stick_pin_3_set(wanbeiyu_hal_idac_mode_t,
+                                                wanbeiyu_uint8_t);
+extern void wanbeiyu_hal_spst_switch_c_stick_pin_3_set(
+    wanbeiyu_hal_spst_switch_state_t);
+
 void wanbeiyu_c_stick_set(wanbeiyu_state_t const *state) {
   /*
    * d1 = signed_distance_to(y=x) / DISTANCE_MAX * UINT8_MAX
