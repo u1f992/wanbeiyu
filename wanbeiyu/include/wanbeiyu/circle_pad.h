@@ -27,6 +27,7 @@ extern "C" {
 #include "state.h"
 
 /**
+ * ```
  *   ^ 1v8
  *   |
  *   o-------------o
@@ -51,6 +52,7 @@ extern "C" {
  *
  * 1: GND; 2: X; 3: 1v8; 4: Y
  * (Pin numbers of Molex 5014610491)
+ * ```
  */
 void wanbeiyu_circle_pad_set(wanbeiyu_state_t const *);
 

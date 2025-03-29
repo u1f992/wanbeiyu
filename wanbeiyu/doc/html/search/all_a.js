@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['y_0',['y',['../structwanbeiyu__touch__screen__state__t.html#aa8ae59a46e62ad40ff6140868fb6e8ae',1,'wanbeiyu_touch_screen_state_t::y'],['../structwanbeiyu__c__stick__state__t.html#aa6bd98d3af62e4137b9093d4018b4f5c',1,'wanbeiyu_c_stick_state_t::y'],['../structwanbeiyu__circle__pad__state__t.html#a37c56f5473a84b573d07a59b4cac3cf2',1,'wanbeiyu_circle_pad_state_t::y'],['../structwanbeiyu__state__t.html#a2a22c776d48f3425dc16eaca571f5989',1,'wanbeiyu_state_t::y']]]
+  ['x_0',['x',['../structwanbeiyu__touch__screen__state__t.html#a24862dc505f6566dc1cb0094558dc7aa',1,'wanbeiyu_touch_screen_state_t::x'],['../structwanbeiyu__c__stick__state__t.html#aaef32aece2c69eae0e18bdd683dabd67',1,'wanbeiyu_c_stick_state_t::x'],['../structwanbeiyu__circle__pad__state__t.html#a5ea634a5687014acbc889045b24effed',1,'wanbeiyu_circle_pad_state_t::x'],['../structwanbeiyu__state__t.html#ab1248fd2b71e0fe916a69092fad5e833',1,'wanbeiyu_state_t::x']]]
 ];

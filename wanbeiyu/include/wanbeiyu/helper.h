@@ -58,7 +58,7 @@ wanbeiyu_helper_map_127_to_255(wanbeiyu_uint8_t value) {
  * - (ja-JP) [複数のデバイスによるデジタル・ポテンショメータの分解能の向上](https://www.analog.com/media/jp/technical-documentation/application-notes/an-582_jp.pdf)
  *
  *   |
- *  .-. R2
+ *  .-. R2c_stick = &(state->c_stick);
  *  | |<--o
  *  '-'   |
  *   |   .-. R3

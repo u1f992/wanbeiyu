@@ -17,6 +17,9 @@
 
 #include <wanbeiyu/parser.h>
 
+void wanbeiyu_parser_on_get(void);
+void wanbeiyu_parser_on_set(wanbeiyu_uint8_t const *);
+
 static struct {
   enum {
     WANBEIYU_PARSER_STATE_INITIAL,

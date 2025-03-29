@@ -65,6 +65,14 @@ add_executable(wanbeiyu_test_touch_screen test/touch_screen.c)
 target_link_libraries(wanbeiyu_test_touch_screen wanbeiyu_touch_screen)
 add_test(NAME wanbeiyu_test_touch_screen COMMAND wanbeiyu_test_touch_screen)
 
+add_executable(wanbeiyu_test_c_stick test/c_stick.c)
+target_link_libraries(wanbeiyu_test_c_stick wanbeiyu_c_stick)
+add_test(NAME wanbeiyu_test_c_stick COMMAND wanbeiyu_test_c_stick)
+
+add_executable(wanbeiyu_test_circle_pad test/circle_pad.c)
+target_link_libraries(wanbeiyu_test_circle_pad wanbeiyu_circle_pad)
+add_test(NAME wanbeiyu_test_circle_pad COMMAND wanbeiyu_test_circle_pad)
+
 add_executable(wanbeiyu_test test/main.c)
 target_link_libraries(wanbeiyu_test wanbeiyu)
 add_test(NAME wanbeiyu_test COMMAND wanbeiyu_test)

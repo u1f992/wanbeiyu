@@ -26,6 +26,7 @@ extern "C" {
 #include "state.h"
 
 /**
+ * ```
  *   | Y_{B}
  *  .-.     _|_
  *  | |<----o o-.
@@ -37,6 +38,7 @@ extern "C" {
  *
  * 1: Y_{A}; 2: X_{B}; 3: Y_{B}; 4: X_{A}
  * (Pin numbers of Molex 5014610491)
+ * ```
  */
 void wanbeiyu_touch_screen_set(wanbeiyu_state_t const *);
 

@@ -27,6 +27,7 @@ extern "C" {
 #include "state.h"
 
 /**
+ * ```
  *   1+         3+
  *     \_     _/
  *       \_ _/
@@ -37,6 +38,7 @@ extern "C" {
  * +: source, -: sink
  *
  * (Pin numbers of Hirose FH33-4S-1SH(10))
+ * ```
  */
 void wanbeiyu_c_stick_set(wanbeiyu_state_t const *);
 

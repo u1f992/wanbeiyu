@@ -27,9 +27,6 @@ extern "C" {
 #define WANBEIYU_COMMAND_GET_STATE 0xf3
 #define WANBEIYU_COMMAND_SET_STATE 0x4a
 
-extern void wanbeiyu_parser_on_get(void);
-extern void wanbeiyu_parser_on_set(wanbeiyu_uint8_t const *);
-
 void wanbeiyu_parser_reset(void);
 void wanbeiyu_parser_feed(wanbeiyu_uint8_t);
 

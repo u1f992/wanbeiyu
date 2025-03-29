@@ -1,5 +1,6 @@
 {
-    "files.associations": {
-        "buttons.h": "c"
+    "[c]": {
+        "editor.formatOnSave": true,
+        "editor.defaultFormatter": "xaver.clang-format"
     }
 }

@@ -26,7 +26,7 @@ extern "C" {
 #include "state.h"
 
 /**
- * @brief Set buttons state
+ * ```
  *      ^ 1v8
  *      |
  *     .-.
@@ -36,6 +36,7 @@ extern "C" {
  *  ----o----o o-.
  *               |
  *               v GND
+ * ```
  */
 void wanbeiyu_buttons_set(wanbeiyu_state_t const *);
 

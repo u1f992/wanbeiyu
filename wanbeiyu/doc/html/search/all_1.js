@@ -6,6 +6,5 @@ var searchData=
   ['circle_5fpad_3',['circle_pad',['../structwanbeiyu__state__t.html#a01d60c1f4d7ebd5ea0d4576face36c5e',1,'wanbeiyu_state_t']]],
   ['circle_5fpad_2ec_4',['circle_pad.c',['../circle__pad_8c.html',1,'']]],
   ['circle_5fpad_2eh_5',['circle_pad.h',['../circle__pad_8h.html',1,'']]],
-  ['compat_2eh_6',['compat.h',['../compat_8h.html',1,'']]],
-  ['console_7',['console',['../wanbeiyu_8c.html#acf1c264dc9db50345919641d56b9e736',1,'wanbeiyu.c']]]
+  ['compat_2eh_6',['compat.h',['../compat_8h.html',1,'']]]
 ];

@@ -17,9 +17,9 @@
 
 #include <wanbeiyu/touch_screen.h>
 
-extern void wanbeiyu_hal_rdac_touch_screen_pin_2_4_set(wanbeiyu_uint16_t);
-extern void wanbeiyu_hal_rdac_touch_screen_pin_3_1_set(wanbeiyu_uint8_t);
-extern void
+void wanbeiyu_hal_rdac_touch_screen_pin_2_4_set(wanbeiyu_uint16_t);
+void wanbeiyu_hal_rdac_touch_screen_pin_3_1_set(wanbeiyu_uint8_t);
+void
     wanbeiyu_hal_spst_switch_touch_screen_set(wanbeiyu_hal_spst_switch_state_t);
 
 void wanbeiyu_touch_screen_set(wanbeiyu_state_t const *state) {
