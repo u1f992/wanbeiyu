@@ -20,6 +20,8 @@
 
 #include <stdio.h>
 
+void wanbeiyu_hook(void) {}
+
 void wanbeiyu_hal_uart_read(wanbeiyu_uint8_t *buffer, size_t *length) {
   static const wanbeiyu_uint8_t input[] = {
       WANBEIYU_COMMAND_SET_STATE, 0xaa, 0x55, 0xf8, 1, 2, 3, 4, 5, 6,
