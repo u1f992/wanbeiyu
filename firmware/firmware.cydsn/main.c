@@ -19,7 +19,14 @@
 
 #include <wanbeiyu.h>
 
-void wanbeiyu_hook(void) {}
+void wanbeiyu_hook_on_get(wanbeiyu_state_t const *state) {
+  assert(state != NULL);
+  (void)state;
+}
+void wanbeiyu_hook_on_set(wanbeiyu_state_t const *state) {
+  assert(state != NULL);
+  (void)state;
+}
 
 void wanbeiyu_hal_uart_read(wanbeiyu_uint8_t *buffer, size_t *length) {
   assert(buffer != NULL);

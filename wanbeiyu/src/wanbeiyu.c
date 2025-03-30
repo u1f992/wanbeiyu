@@ -19,7 +19,8 @@
 
 void wanbeiyu_hal_uart_read(wanbeiyu_uint8_t *, size_t *);
 void wanbeiyu_hal_uart_write(wanbeiyu_uint8_t const *, size_t);
-void wanbeiyu_hook(void);
+void wanbeiyu_hook_on_get(wanbeiyu_state_t const *);
+void wanbeiyu_hook_on_set(wanbeiyu_state_t const *);
 
 static struct {
   wanbeiyu_uint8_t uart_buffer[WANBEIYU_HAL_UART_BUFFER_SIZE];
@@ -30,6 +31,7 @@ void wanbeiyu_parser_on_get(void) {
   wanbeiyu_uint8_t buffer[9];
   wanbeiyu_state_serialize(&(wanbeiyu.state), buffer);
   wanbeiyu_hal_uart_write(buffer, sizeof(buffer));
+  wanbeiyu_hook_on_set(&(wanbeiyu.state));
 }
 
 static WANBEIYU_INLINE void
@@ -45,7 +47,7 @@ wanbeiyu_console_set(wanbeiyu_state_t const *state) {
 void wanbeiyu_parser_on_set(wanbeiyu_uint8_t const *buffer) {
   wanbeiyu_state_deserialize(buffer, &(wanbeiyu.state));
   wanbeiyu_console_set(&(wanbeiyu.state));
-  wanbeiyu_hook();
+  wanbeiyu_hook_on_set(&(wanbeiyu.state));
 }
 
 void wanbeiyu_init(void) {

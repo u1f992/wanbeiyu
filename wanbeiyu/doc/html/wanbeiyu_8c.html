@@ -91,8 +91,10 @@ Functions</h2></td></tr>
 <tr class="separator:aef9531b240476d573b65e295fcb72680"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af75adb77247b1284f2e1bbae206814ff" id="r_af75adb77247b1284f2e1bbae206814ff"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="wanbeiyu_8c.html#af75adb77247b1284f2e1bbae206814ff">wanbeiyu_hal_uart_write</a> (<a class="el" href="compat_8h.html#adc2c44bc08090fb4cadc2e7e83a35ce2">wanbeiyu_uint8_t</a> const *, size_t)</td></tr>
 <tr class="separator:af75adb77247b1284f2e1bbae206814ff"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6e07be7c4b2657eeeed264678555bfb4" id="r_a6e07be7c4b2657eeeed264678555bfb4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="wanbeiyu_8c.html#a6e07be7c4b2657eeeed264678555bfb4">wanbeiyu_hook</a> (void)</td></tr>
-<tr class="separator:a6e07be7c4b2657eeeed264678555bfb4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2c9836851b8c313dcc19748c93040302" id="r_a2c9836851b8c313dcc19748c93040302"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="wanbeiyu_8c.html#a2c9836851b8c313dcc19748c93040302">wanbeiyu_hook_on_get</a> (<a class="el" href="structwanbeiyu__state__t.html">wanbeiyu_state_t</a> const *)</td></tr>
+<tr class="separator:a2c9836851b8c313dcc19748c93040302"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9eb1c46214d10df1336fc64072987624" id="r_a9eb1c46214d10df1336fc64072987624"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="wanbeiyu_8c.html#a9eb1c46214d10df1336fc64072987624">wanbeiyu_hook_on_set</a> (<a class="el" href="structwanbeiyu__state__t.html">wanbeiyu_state_t</a> const *)</td></tr>
+<tr class="separator:a9eb1c46214d10df1336fc64072987624"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa85d55e7289fac90e630a8ebb7298f43" id="r_aa85d55e7289fac90e630a8ebb7298f43"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="wanbeiyu_8c.html#aa85d55e7289fac90e630a8ebb7298f43">wanbeiyu_parser_on_get</a> (void)</td></tr>
 <tr class="separator:aa85d55e7289fac90e630a8ebb7298f43"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9000f83717e2ef97cc37c85f1c59c5e5" id="r_a9000f83717e2ef97cc37c85f1c59c5e5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="wanbeiyu_8c.html#a9000f83717e2ef97cc37c85f1c59c5e5">wanbeiyu_parser_on_set</a> (<a class="el" href="compat_8h.html#adc2c44bc08090fb4cadc2e7e83a35ce2">wanbeiyu_uint8_t</a> const *<a class="el" href="parser_8c.html#a67fdada644e36037edecaca44b7e3491">buffer</a>)</td></tr>
@@ -159,16 +161,34 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a6e07be7c4b2657eeeed264678555bfb4" name="a6e07be7c4b2657eeeed264678555bfb4"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a6e07be7c4b2657eeeed264678555bfb4">&#9670;&#160;</a></span>wanbeiyu_hook()</h2>
+<a id="a2c9836851b8c313dcc19748c93040302" name="a2c9836851b8c313dcc19748c93040302"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2c9836851b8c313dcc19748c93040302">&#9670;&#160;</a></span>wanbeiyu_hook_on_get()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void wanbeiyu_hook </td>
+          <td class="memname">void wanbeiyu_hook_on_get </td>
           <td>(</td>
-          <td class="paramtype">void&#160;</td>
+          <td class="paramtype"><a class="el" href="structwanbeiyu__state__t.html">wanbeiyu_state_t</a> const *&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a9eb1c46214d10df1336fc64072987624" name="a9eb1c46214d10df1336fc64072987624"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9eb1c46214d10df1336fc64072987624">&#9670;&#160;</a></span>wanbeiyu_hook_on_set()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void wanbeiyu_hook_on_set </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structwanbeiyu__state__t.html">wanbeiyu_state_t</a> const *&#160;</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
         </tr>
