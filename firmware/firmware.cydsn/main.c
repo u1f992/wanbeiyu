@@ -22,24 +22,76 @@
 void wanbeiyu_hook_on_get(wanbeiyu_state_t const *state) {
   assert(state != NULL);
   (void)state;
+  Pin_USBUART_Status_Write(0);
+  Timer_USBUART_Status_Stop();
+  Timer_USBUART_Status_WriteCounter(0);
+  Timer_USBUART_Status_Start();
 }
 void wanbeiyu_hook_on_set(wanbeiyu_state_t const *state) {
   assert(state != NULL);
   (void)state;
+  Pin_USBUART_Status_Write(0);
+  Timer_USBUART_Status_Stop();
+  Timer_USBUART_Status_WriteCounter(0);
+  Timer_USBUART_Status_Start();
 }
+
+#define USBFS_DEVICE 0
+/*
+ * > The maximum amount of received data at a time is limited to 64 bytes.
+ * Document Number: 002-19744 Rev. *A
+ */
+#define USBUART_BUFFER_SIZE 64
+static uint8 USBUART_Started = 0;
 
 void wanbeiyu_hal_uart_read(wanbeiyu_uint8_t *buffer, size_t *length) {
   assert(buffer != NULL);
   assert(length != NULL);
-  (void)buffer;
-  (void)length;
+  /*
+   * https://community.infineon.com/t5/Knowledge-Base-Articles/Troubleshooting-PSoC-3-PSoC-4-L-Series-and-PSoC-5LP-USB-Designs/ta-p/256817#toc-hId-1576988805
+   */
+  if (!USBUART_VBusPresent()) {
+    USBUART_Stop();
+    USBUART_Started = 0;
+    Pin_USBUART_Status_Write(0);
+    *length = 0;
+    return;
+  } else if (!USBUART_Started) {
+    USBUART_Start(USBFS_DEVICE, USBUART_5V_OPERATION);
+    USBUART_Started = 1;
+    Pin_USBUART_Status_Write(1);
+  }
+  /*
+   * https://github.com/Infineon/PSoC4-MCU-USB-Connectivity-Designs/blob/d739e38414b1ff6a0f522fd9802a13dba2c0e13a/USBFS_UART/USBFS_UART.cydsn/main.c#L87-L97
+   */
+  if (USBUART_IsConfigurationChanged() && USBUART_GetConfiguration()) {
+    USBUART_CDC_Init();
+  }
+  /*
+   * https://github.com/Infineon/PSoC4-MCU-USB-Connectivity-Designs/blob/d739e38414b1ff6a0f522fd9802a13dba2c0e13a/USBFS_UART/USBFS_UART.cydsn/main.c#L99-L178
+   */
+  if (!USBUART_GetConfiguration() || !USBUART_DataIsReady()) {
+    *length = 0;
+    return;
+  }
+  *length = USBUART_GetAll(buffer);
+  assert(*length <= USBUART_BUFFER_SIZE);
   assert(*length <= WANBEIYU_HAL_UART_BUFFER_SIZE);
 }
 
-void wanbeiyu_hal_uart_write(const wanbeiyu_uint8_t *buffer, size_t length) {
+void wanbeiyu_hal_uart_write(wanbeiyu_uint8_t const *buffer, size_t length) {
   assert(buffer != NULL);
-  (void)buffer;
-  (void)length;
+  while (USBUART_CDCIsReady() == 0)
+    ;
+  USBUART_PutData(buffer, length);
+  /*
+   * https://github.com/Infineon/PSoC4-MCU-USB-Connectivity-Designs/blob/d739e38414b1ff6a0f522fd9802a13dba2c0e13a/USBFS_UART/USBFS_UART.cydsn/main.c#L118-L132
+   */
+  if (USBUART_BUFFER_SIZE == length) {
+    while (USBUART_CDCIsReady() == 0)
+      ;
+    USBUART_PutData(NULL, 0);
+  }
 }
 
 void wanbeiyu_hal_spst_switch_buttons_power_set(
@@ -158,9 +210,16 @@ void wanbeiyu_hal_spst_switch_circle_pad_pin_4_set(
   (void)state;
 }
 
+CY_ISR(ISR_USBUART_Status_Handler) {
+  Pin_USBUART_Status_Write(1);
+  Timer_USBUART_Status_ClearInterrupt(Timer_USBUART_Status_INTR_MASK_TC);
+}
+
 int main(void) {
   CyGlobalIntEnable; /* Enable global interrupts. */
 
+  Pin_USBUART_Status_Write(0);
+  ISR_USBUART_Status_StartEx(ISR_USBUART_Status_Handler);
   wanbeiyu_init();
 
   for (;;) {
