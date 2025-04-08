@@ -36,6 +36,12 @@ void wanbeiyu_hook_on_set(wanbeiyu_state_t const *state) {
   Timer_USBUART_Status_Start();
 }
 
+static void SPI_SpiUartWriteTxDataBlocking(uint32 txData) {
+  SPI_SpiUartWriteTxData(txData);
+  while (SPI_SpiIsBusBusy())
+    ;
+}
+
 #define USBFS_DEVICE 0
 /*
  * > The maximum amount of received data at a time is limited to 64 bytes.
@@ -160,12 +166,20 @@ void wanbeiyu_hal_spst_switch_buttons_a_set(
 }
 
 void wanbeiyu_hal_rdac_touch_screen_pin_2_4_set(wanbeiyu_uint16_t position) {
+  uint8 r1_2;
+  uint8 r3;
   assert(position < 320);
-  (void)position;
+  position = wanbeiyu_helper_map_319_to_510(position);
+  r1_2 = position < 255 ? 0 : position - 255;
+  r3 = position >= 255 ? 255 : position;
+  SPI_SpiUartWriteTxDataBlocking(0b0000000000 | r1_2);
+  SPI_SpiUartWriteTxDataBlocking(0b0100000000 | r3);
+  SPI_SpiUartWriteTxDataBlocking(0b1000000000 | r1_2);
 }
 void wanbeiyu_hal_rdac_touch_screen_pin_3_1_set(wanbeiyu_uint8_t position) {
   assert(position < 240);
-  (void)position;
+  position = wanbeiyu_helper_map_239_to_255(position);
+  SPI_SpiUartWriteTxDataBlocking(0b1100000000 | position);
 }
 void wanbeiyu_hal_spst_switch_touch_screen_set(
     wanbeiyu_hal_spst_switch_state_t state) {
