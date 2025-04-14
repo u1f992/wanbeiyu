@@ -172,6 +172,7 @@ void wanbeiyu_hal_rdac_touch_screen_pin_2_4_set(wanbeiyu_uint16_t position) {
   position = wanbeiyu_helper_map_319_to_510(position);
   r1_2 = position < 255 ? 0 : position - 255;
   r3 = position >= 255 ? 255 : position;
+  SPI_SpiSetActiveSlaveSelect(0);
   SPI_SpiUartWriteTxDataBlocking(0b0000000000 | r1_2);
   SPI_SpiUartWriteTxDataBlocking(0b0100000000 | r3);
   SPI_SpiUartWriteTxDataBlocking(0b1000000000 | r1_2);
@@ -179,11 +180,17 @@ void wanbeiyu_hal_rdac_touch_screen_pin_2_4_set(wanbeiyu_uint16_t position) {
 void wanbeiyu_hal_rdac_touch_screen_pin_3_1_set(wanbeiyu_uint8_t position) {
   assert(position < 240);
   position = wanbeiyu_helper_map_239_to_255(position);
+  SPI_SpiSetActiveSlaveSelect(0);
   SPI_SpiUartWriteTxDataBlocking(0b1100000000 | position);
 }
 void wanbeiyu_hal_spst_switch_touch_screen_set(
     wanbeiyu_hal_spst_switch_state_t state) {
-  (void)state;
+  SPI_SpiSetActiveSlaveSelect(1);
+  /*
+   * > ... THE DEVICE USERS THE LAST 8 BITS RECEIVED TO UPDATE THE SWITCHES.
+   * Maxim Integrated 19-7308; Rev 1; 6/14, P.16
+   */
+  SPI_SpiUartWriteTxDataBlocking(state);
 }
 
 void wanbeiyu_hal_idac_c_stick_pin_1_set(wanbeiyu_hal_idac_mode_t mode,
