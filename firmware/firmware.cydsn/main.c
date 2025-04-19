@@ -241,7 +241,7 @@ int main(void) {
 
   Pin_USBUART_Status_Write(0);
   ISR_USBUART_Status_StartEx(ISR_USBUART_Status_Handler);
-SPI_Start();
+  SPI_Start();
   wanbeiyu_init();
 
   for (;;) {
