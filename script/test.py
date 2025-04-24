@@ -1,3 +1,6 @@
+import math
+import time
+
 import serial
 
 
@@ -23,7 +26,7 @@ def send(
     c_stick: tuple[int | None, int | None] = (None, None),
     circle_pad: tuple[int | None, int | None] = (None, None),
 ):
-    byte0 = 0x4a
+    byte0 = 0x4A
     byte1 = (
         (power << 7)
         | (home << 6)
@@ -68,3 +71,13 @@ def send(
     ser.write(
         bytes([byte0, byte1, byte2, byte3, byte4, byte5, byte6, byte7, byte8, byte9])
     )
+
+
+def draw_circle(ser, cx, cy, r, steps):
+    for i in range(steps + 1):
+        angle = 2 * math.pi * i / steps
+        x = int(cx + r * math.cos(angle))
+        y = int(cy + r * math.sin(angle))
+        send(ser, touch_screen=(x, y))
+        time.sleep(0.05)
+    send(ser)
