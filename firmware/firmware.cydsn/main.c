@@ -36,12 +36,6 @@ void wanbeiyu_hook_on_set(wanbeiyu_state_t const *state) {
   Timer_USBUART_Status_Start();
 }
 
-static void SPI_SpiUartWriteTxDataBlocking(uint32 txData) {
-  SPI_SpiUartWriteTxData(txData);
-  while (SPI_SpiIsBusBusy())
-    ;
-}
-
 #define USBFS_DEVICE 0
 /*
  * > The maximum amount of received data at a time is limited to 64 bytes.
@@ -173,24 +167,34 @@ void wanbeiyu_hal_rdac_touch_screen_pin_2_4_set(wanbeiyu_uint16_t position) {
   r1_2 = position < 255 ? 0 : position - 255;
   r3 = position >= 255 ? 255 : position;
   SPI_SpiSetActiveSlaveSelect(SPI_SPI_SLAVE_SELECT0);
-  SPI_SpiUartWriteTxDataBlocking(0b0000000000 | r1_2);
-  SPI_SpiUartWriteTxDataBlocking(0b0100000000 | r3);
-  SPI_SpiUartWriteTxDataBlocking(0b1000000000 | r1_2);
+  /* https://github.com/Infineon/PSoC4-MCU-Digital-Designs/blob/72f1d4e035cda9354576b2631b1308c05ab79b63/SPI/CE95365%20-%20SPI%20Transmit%20and%20Receive%20using%20a%20Serial%20Communication%20Block%20(SCB)%20with%20PSoC%204/CE95365.cydsn/main.c#L58-L78 */
+  SPI_ClearMasterInterruptSource(SPI_INTR_MASTER_SPI_DONE);
+  SPI_SpiUartWriteTxData(0b0000000000 | r1_2);
+  SPI_SpiUartWriteTxData(0b0100000000 | r3);
+  SPI_SpiUartWriteTxData(0b1000000000 | r1_2);
+  while ((SPI_GetMasterInterruptSource() & SPI_INTR_MASTER_SPI_DONE) == 0)
+    ;
 }
 void wanbeiyu_hal_rdac_touch_screen_pin_3_1_set(wanbeiyu_uint8_t position) {
   assert(position < 240);
   position = wanbeiyu_helper_map_239_to_255(position);
   SPI_SpiSetActiveSlaveSelect(SPI_SPI_SLAVE_SELECT0);
-  SPI_SpiUartWriteTxDataBlocking(0b1100000000 | position);
+  SPI_ClearMasterInterruptSource(SPI_INTR_MASTER_SPI_DONE);
+  SPI_SpiUartWriteTxData(0b1100000000 | position);
+  while ((SPI_GetMasterInterruptSource() & SPI_INTR_MASTER_SPI_DONE) == 0)
+    ;
 }
 void wanbeiyu_hal_spst_switch_touch_screen_set(
     wanbeiyu_hal_spst_switch_state_t state) {
   SPI_SpiSetActiveSlaveSelect(SPI_SPI_SLAVE_SELECT1);
+  SPI_ClearMasterInterruptSource(SPI_INTR_MASTER_SPI_DONE);
   /*
    * > ... THE DEVICE USERS THE LAST 8 BITS RECEIVED TO UPDATE THE SWITCHES.
    * Maxim Integrated 19-7308; Rev 1; 6/14, P.16
    */
-  SPI_SpiUartWriteTxDataBlocking(state);
+  SPI_SpiUartWriteTxData(state);
+  while ((SPI_GetMasterInterruptSource() & SPI_INTR_MASTER_SPI_DONE) == 0)
+    ;
 }
 
 void wanbeiyu_hal_idac_c_stick_pin_1_set(wanbeiyu_hal_idac_mode_t mode,
