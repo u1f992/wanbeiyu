@@ -197,6 +197,29 @@ void wanbeiyu_hal_spst_switch_touch_screen_set(
     ;
 }
 
+#define IDAC_POLARITY_SOURCE 0
+#define IDAC_POLARITY_SINK 1
+
+static void IDAC_CirclePad2_SetPolarity(uint8 polarity) {
+  uint8 savedIntrStatus = CyEnterCriticalSection();
+  IDAC_CirclePad2_IDAC_POLARITY_CONTROL_REG =
+      (IDAC_CirclePad2_IDAC_POLARITY_CONTROL_REG &
+       ~(uint32)(IDAC_CirclePad2_IDAC_POLARITY_MASK
+                 << IDAC_CirclePad2_IDAC_POLARITY_POSITION)) |
+      ((uint32)polarity << IDAC_CirclePad2_IDAC_POLARITY_POSITION);
+  CyExitCriticalSection(savedIntrStatus);
+}
+
+static void IDAC_CirclePad4_SetPolarity(uint8 polarity) {
+  uint8 savedIntrStatus = CyEnterCriticalSection();
+  IDAC_CirclePad4_IDAC_POLARITY_CONTROL_REG =
+      (IDAC_CirclePad4_IDAC_POLARITY_CONTROL_REG &
+       ~(uint32)(IDAC_CirclePad4_IDAC_POLARITY_MASK
+                 << IDAC_CirclePad4_IDAC_POLARITY_POSITION)) |
+      ((uint32)polarity << IDAC_CirclePad4_IDAC_POLARITY_POSITION);
+  CyExitCriticalSection(savedIntrStatus);
+}
+
 void wanbeiyu_hal_idac_c_stick_pin_1_set(wanbeiyu_hal_idac_mode_t mode,
                                          wanbeiyu_uint8_t value) {
   (void)mode;
@@ -218,8 +241,8 @@ void wanbeiyu_hal_spst_switch_c_stick_pin_3_set(
 
 void wanbeiyu_hal_idac_circle_pad_pin_2_set(wanbeiyu_hal_idac_mode_t mode,
                                             wanbeiyu_uint8_t value) {
-  (void)mode;
-  (void)value;
+  IDAC_CirclePad2_SetPolarity(mode == WANBEIYU_HAL_IDAC_SINK ? IDAC_POLARITY_SINK : IDAC_POLARITY_SOURCE);
+  IDAC_CirclePad2_SetValue(wanbeiyu_helper_map_255_to_127(value));
 }
 void wanbeiyu_hal_spst_switch_circle_pad_pin_2_set(
     wanbeiyu_hal_spst_switch_state_t state) {
@@ -227,8 +250,8 @@ void wanbeiyu_hal_spst_switch_circle_pad_pin_2_set(
 }
 void wanbeiyu_hal_idac_circle_pad_pin_4_set(wanbeiyu_hal_idac_mode_t mode,
                                             wanbeiyu_uint8_t value) {
-  (void)mode;
-  (void)value;
+  IDAC_CirclePad4_SetPolarity(mode == WANBEIYU_HAL_IDAC_SINK ? IDAC_POLARITY_SINK : IDAC_POLARITY_SOURCE);
+  IDAC_CirclePad4_SetValue(wanbeiyu_helper_map_255_to_127(value));
 }
 void wanbeiyu_hal_spst_switch_circle_pad_pin_4_set(
     wanbeiyu_hal_spst_switch_state_t state) {
@@ -246,6 +269,8 @@ int main(void) {
   Pin_USBUART_Status_Write(0);
   ISR_USBUART_Status_StartEx(ISR_USBUART_Status_Handler);
   SPI_Start();
+  IDAC_CirclePad2_Start();
+  IDAC_CirclePad4_Start();
   wanbeiyu_init();
 
   for (;;) {
