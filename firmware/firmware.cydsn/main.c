@@ -192,7 +192,7 @@ void wanbeiyu_hal_spst_switch_touch_screen_set(
    * > ... THE DEVICE USERS THE LAST 8 BITS RECEIVED TO UPDATE THE SWITCHES.
    * Maxim Integrated 19-7308; Rev 1; 6/14, P.16
    */
-  SPI_SpiUartWriteTxData(state);
+  SPI_SpiUartWriteTxData(state == WANBEIYU_HAL_SPST_SWITCH_CLOSE ? 0x0f : 0);
   while ((SPI_GetMasterInterruptSource() & SPI_INTR_MASTER_SPI_DONE) == 0)
     ;
 }
