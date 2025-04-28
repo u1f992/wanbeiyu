@@ -19,6 +19,12 @@
 
 #include <wanbeiyu.h>
 
+/*
+ * > ... THE DEVICE USERS THE LAST 8 BITS RECEIVED TO UPDATE THE SWITCHES.
+ * Maxim Integrated 19-7308; Rev 1; 6/14, P.16
+ */
+static uint8_t max14662_state = 0;
+
 void wanbeiyu_hook_on_get(wanbeiyu_state_t const *state) {
   assert(state != NULL);
   (void)state;
@@ -186,13 +192,14 @@ void wanbeiyu_hal_rdac_touch_screen_pin_3_1_set(wanbeiyu_uint8_t position) {
 }
 void wanbeiyu_hal_spst_switch_touch_screen_set(
     wanbeiyu_hal_spst_switch_state_t state) {
+  if (state == WANBEIYU_HAL_SPST_SWITCH_CLOSE) {
+    max14662_state |= 0x0f;
+  } else {
+    max14662_state &= ~0x0f;
+  }
   SPI_SpiSetActiveSlaveSelect(SPI_SPI_SLAVE_SELECT1);
   SPI_ClearMasterInterruptSource(SPI_INTR_MASTER_SPI_DONE);
-  /*
-   * > ... THE DEVICE USERS THE LAST 8 BITS RECEIVED TO UPDATE THE SWITCHES.
-   * Maxim Integrated 19-7308; Rev 1; 6/14, P.16
-   */
-  SPI_SpiUartWriteTxData(state == WANBEIYU_HAL_SPST_SWITCH_CLOSE ? 0x0f : 0);
+  SPI_SpiUartWriteTxData(max14662_state);
   while ((SPI_GetMasterInterruptSource() & SPI_INTR_MASTER_SPI_DONE) == 0)
     ;
 }
@@ -246,7 +253,16 @@ void wanbeiyu_hal_idac_circle_pad_pin_2_set(wanbeiyu_hal_idac_mode_t mode,
 }
 void wanbeiyu_hal_spst_switch_circle_pad_pin_2_set(
     wanbeiyu_hal_spst_switch_state_t state) {
-  (void)state;
+  if (state == WANBEIYU_HAL_SPST_SWITCH_CLOSE) {
+    max14662_state |= (1 << 6);
+  } else {
+    max14662_state &= ~(1 << 6);
+  }
+  SPI_SpiSetActiveSlaveSelect(SPI_SPI_SLAVE_SELECT1);
+  SPI_ClearMasterInterruptSource(SPI_INTR_MASTER_SPI_DONE);
+  SPI_SpiUartWriteTxData(max14662_state);
+  while ((SPI_GetMasterInterruptSource() & SPI_INTR_MASTER_SPI_DONE) == 0)
+    ;
 }
 void wanbeiyu_hal_idac_circle_pad_pin_4_set(wanbeiyu_hal_idac_mode_t mode,
                                             wanbeiyu_uint8_t value) {
@@ -255,7 +271,16 @@ void wanbeiyu_hal_idac_circle_pad_pin_4_set(wanbeiyu_hal_idac_mode_t mode,
 }
 void wanbeiyu_hal_spst_switch_circle_pad_pin_4_set(
     wanbeiyu_hal_spst_switch_state_t state) {
-  (void)state;
+  if (state == WANBEIYU_HAL_SPST_SWITCH_CLOSE) {
+    max14662_state |= (1 << 7);
+  } else {
+    max14662_state &= ~(1 << 7);
+  }
+  SPI_SpiSetActiveSlaveSelect(SPI_SPI_SLAVE_SELECT1);
+  SPI_ClearMasterInterruptSource(SPI_INTR_MASTER_SPI_DONE);
+  SPI_SpiUartWriteTxData(max14662_state);
+  while ((SPI_GetMasterInterruptSource() & SPI_INTR_MASTER_SPI_DONE) == 0)
+    ;
 }
 
 CY_ISR(ISR_USBUART_Status_Handler) {
