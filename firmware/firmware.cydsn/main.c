@@ -207,6 +207,26 @@ void wanbeiyu_hal_spst_switch_touch_screen_set(
 #define IDAC_POLARITY_SOURCE 0
 #define IDAC_POLARITY_SINK 1
 
+static void IDAC_CStick1_SetPolarity(uint8 polarity) {
+  uint8 savedIntrStatus = CyEnterCriticalSection();
+  IDAC_CStick1_IDAC_POLARITY_CONTROL_REG =
+      (IDAC_CStick1_IDAC_POLARITY_CONTROL_REG &
+       ~(uint32)(IDAC_CStick1_IDAC_POLARITY_MASK
+                 << IDAC_CStick1_IDAC_POLARITY_POSITION)) |
+      ((uint32)polarity << IDAC_CStick1_IDAC_POLARITY_POSITION);
+  CyExitCriticalSection(savedIntrStatus);
+}
+
+static void IDAC_CStick3_SetPolarity(uint8 polarity) {
+  uint8 savedIntrStatus = CyEnterCriticalSection();
+  IDAC_CStick3_IDAC_POLARITY_CONTROL_REG =
+      (IDAC_CStick3_IDAC_POLARITY_CONTROL_REG &
+       ~(uint32)(IDAC_CStick3_IDAC_POLARITY_MASK
+                 << IDAC_CStick3_IDAC_POLARITY_POSITION)) |
+      ((uint32)polarity << IDAC_CStick3_IDAC_POLARITY_POSITION);
+  CyExitCriticalSection(savedIntrStatus);
+}
+
 static void IDAC_CirclePad2_SetPolarity(uint8 polarity) {
   uint8 savedIntrStatus = CyEnterCriticalSection();
   IDAC_CirclePad2_IDAC_POLARITY_CONTROL_REG =
@@ -229,8 +249,8 @@ static void IDAC_CirclePad4_SetPolarity(uint8 polarity) {
 
 void wanbeiyu_hal_idac_c_stick_pin_1_set(wanbeiyu_hal_idac_mode_t mode,
                                          wanbeiyu_uint8_t value) {
-  (void)mode;
-  (void)value;
+  IDAC_CStick1_SetPolarity(mode == WANBEIYU_HAL_IDAC_SINK ? IDAC_POLARITY_SOURCE : IDAC_POLARITY_SINK);
+  IDAC_CStick1_SetValue(value);
 }
 void wanbeiyu_hal_spst_switch_c_stick_pin_1_set(
     wanbeiyu_hal_spst_switch_state_t state) {
@@ -238,8 +258,8 @@ void wanbeiyu_hal_spst_switch_c_stick_pin_1_set(
 }
 void wanbeiyu_hal_idac_c_stick_pin_3_set(wanbeiyu_hal_idac_mode_t mode,
                                          wanbeiyu_uint8_t value) {
-  (void)mode;
-  (void)value;
+  IDAC_CStick3_SetPolarity(mode == WANBEIYU_HAL_IDAC_SINK ? IDAC_POLARITY_SOURCE : IDAC_POLARITY_SINK);
+  IDAC_CStick3_SetValue(value);
 }
 void wanbeiyu_hal_spst_switch_c_stick_pin_3_set(
     wanbeiyu_hal_spst_switch_state_t state) {
@@ -294,6 +314,10 @@ int main(void) {
   Pin_USBUART_Status_Write(0);
   ISR_USBUART_Status_StartEx(ISR_USBUART_Status_Handler);
   SPI_Start();
+  IDAC_CStick1_Start();
+  Opamp_CStick1_Start();
+  IDAC_CStick3_Start();
+  Opamp_CStick3_Start();
   IDAC_CirclePad2_Start();
   Opamp_CirclePad2_Start();
   IDAC_CirclePad4_Start();
