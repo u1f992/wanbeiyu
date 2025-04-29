@@ -254,7 +254,16 @@ void wanbeiyu_hal_idac_c_stick_pin_1_set(wanbeiyu_hal_idac_mode_t mode,
 }
 void wanbeiyu_hal_spst_switch_c_stick_pin_1_set(
     wanbeiyu_hal_spst_switch_state_t state) {
-  (void)state;
+  if (state == WANBEIYU_HAL_SPST_SWITCH_CLOSE) {
+    max14662_state |= (1 << 4);
+  } else {
+    max14662_state &= ~(1 << 4);
+  }
+  SPI_SpiSetActiveSlaveSelect(SPI_SPI_SLAVE_SELECT1);
+  SPI_ClearMasterInterruptSource(SPI_INTR_MASTER_SPI_DONE);
+  SPI_SpiUartWriteTxData(max14662_state);
+  while ((SPI_GetMasterInterruptSource() & SPI_INTR_MASTER_SPI_DONE) == 0)
+    ;
 }
 void wanbeiyu_hal_idac_c_stick_pin_3_set(wanbeiyu_hal_idac_mode_t mode,
                                          wanbeiyu_uint8_t value) {
@@ -263,7 +272,16 @@ void wanbeiyu_hal_idac_c_stick_pin_3_set(wanbeiyu_hal_idac_mode_t mode,
 }
 void wanbeiyu_hal_spst_switch_c_stick_pin_3_set(
     wanbeiyu_hal_spst_switch_state_t state) {
-  (void)state;
+  if (state == WANBEIYU_HAL_SPST_SWITCH_CLOSE) {
+    max14662_state |= (1 << 5);
+  } else {
+    max14662_state &= ~(1 << 5);
+  }
+  SPI_SpiSetActiveSlaveSelect(SPI_SPI_SLAVE_SELECT1);
+  SPI_ClearMasterInterruptSource(SPI_INTR_MASTER_SPI_DONE);
+  SPI_SpiUartWriteTxData(max14662_state);
+  while ((SPI_GetMasterInterruptSource() & SPI_INTR_MASTER_SPI_DONE) == 0)
+    ;
 }
 
 void wanbeiyu_hal_idac_circle_pad_pin_2_set(wanbeiyu_hal_idac_mode_t mode,
