@@ -1,0 +1,4 @@
+(sym_lib_table
+  (version 7)
+  (lib (name "CSTNE16M0V53C000R0")(type "KiCad")(uri "${KIPRJMOD}/library/CSTNE16M0V53C000R0/CSTNE16M0V53C000R0.kicad_sym")(options "")(descr ""))
+)
